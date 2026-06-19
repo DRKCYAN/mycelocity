@@ -11,7 +11,7 @@ const isPricingActive = path.startsWith('/pricing');
 const isAboutActive = path.startsWith('/about');
 
 const navLinkClass = (active: boolean) =>
-  `rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+  `rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 ${
     active
       ? 'text-accent-700 dark:text-accent-400'
       : 'text-stone-600 hover:text-accent-700 dark:text-stone-300 dark:hover:text-accent-400'
@@ -22,21 +22,34 @@ const navLinkClass = (active: boolean) =>
   class="sticky top-0 z-30 border-b border-stone-200 bg-paper/90 backdrop-blur dark:border-stone-800 dark:bg-stone-950/90"
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
-    <a href="/" class="flex items-center gap-2 text-lg font-bold text-stone-900 dark:text-stone-100">
+    <a href="/" class="flex items-center gap-2.5 text-lg font-bold text-stone-900 dark:text-stone-100">
       <img src="/favicon.svg" alt="" width="28" height="28" />
       Mycelocity
     </a>
 
     <!-- Desktop nav -->
-    <nav class="hidden items-center gap-1 lg:flex">
+    <nav class="hidden items-center gap-2 lg:flex">
       <div class="group relative">
         <button
           type="button"
           aria-haspopup="true"
-          class={`flex items-center gap-1 ${navLinkClass(isToolsActive)}`}
+          class={`inline-flex items-center gap-1.5 ${navLinkClass(isToolsActive)}`}
         >
-          Tools
-          <span aria-hidden="true" class="text-xs">▾</span>
+          <span class="leading-none">Tools</span>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="shrink-0 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180"
+          >
+            <path d="m6 9 6 6 6-6" />
+          </svg>
         </button>
         <!-- Pure CSS hover dropdown: the parent nav is already `hidden lg:flex`,
              so this only needs visibility/opacity control, not display — that
@@ -83,17 +96,69 @@ const navLinkClass = (active: boolean) =>
         type="button"
         data-theme-toggle
         aria-label="Toggle dark mode"
-        class="rounded-lg p-2 text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-accent-700 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-accent-400"
       >
-        <span data-theme-icon></span>
+        <svg
+          data-icon-sun
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="hidden"
+        >
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>
+        <svg
+          data-icon-moon
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401Z"
+          ></path>
+        </svg>
       </button>
       <button
         type="button"
         data-menu-open
         aria-label="Open menu"
-        class="rounded-lg p-2 text-stone-600 hover:bg-stone-100 lg:hidden dark:text-stone-300 dark:hover:bg-stone-800"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-lg text-stone-600 transition-colors duration-150 hover:bg-stone-100 hover:text-accent-700 lg:hidden dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-accent-400"
       >
-        ☰
+        <svg
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4 6h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 18h16"></path>
+        </svg>
       </button>
     </div>
   </div>
@@ -168,9 +233,8 @@ const navLinkClass = (active: boolean) =>
   (function () {
     function syncIcon() {
       const dark = document.documentElement.classList.contains('dark');
-      document.querySelectorAll('[data-theme-icon]').forEach((el) => {
-        el.textContent = dark ? '☀' : '🌙';
-      });
+      document.querySelectorAll('[data-icon-sun]').forEach((el) => el.classList.toggle('hidden', !dark));
+      document.querySelectorAll('[data-icon-moon]').forEach((el) => el.classList.toggle('hidden', dark));
     }
     function toggleTheme() {
       const root = document.documentElement;
