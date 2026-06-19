@@ -1,6 +1,6 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Sidebar from '@/components/Sidebar.astro';
+import TopNav from '@/components/TopNav.astro';
 import { CATEGORIES, calculatorsByCategory, type Category } from '@/lib/calculators';
 
 export function getStaticPaths() {
@@ -34,9 +34,9 @@ const jsonLd = {
   jsonLd={jsonLd}
   path={path}
 >
-  <Sidebar />
+  <TopNav />
 
-  <main class="lg:ml-72">
+  <main>
     <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
       <nav class="mb-4 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
         <a href="/" class="hover:text-accent-600 dark:hover:text-accent-400">Home</a>
