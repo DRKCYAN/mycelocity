@@ -1,12 +1,15 @@
 ---
 import Base from '@/layouts/Base.astro';
-import Sidebar from '@/components/Sidebar.astro';
+import TopNav from '@/components/TopNav.astro';
 import { type Calculator, calculatorById } from '@/lib/calculators';
+import type { Guide } from '@/lib/guides';
 
 export interface Props {
   calc: Calculator;
+  /** Guides related to this calculator (resolved in the page). */
+  guides?: Guide[];
 }
-const { calc } = Astro.props;
+const { calc, guides = [] } = Astro.props;
 
 const connected = calc.connectedTo
   .map((id) => calculatorById(id))
@@ -31,9 +34,9 @@ const jsonLd = {
 ---
 
 <Base title={calc.seoTitle} description={calc.metaDescription} jsonLd={jsonLd} path={path}>
-  <Sidebar activeSlug={calc.slug} />
+  <TopNav />
 
-  <main class="lg:ml-72">
+  <main>
     <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
       <!-- Breadcrumb -->
       <nav class="mb-4 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
@@ -86,6 +89,32 @@ const jsonLd = {
                     class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
                   >
                     {c.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )
+      }
+
+      <!-- "Guides for this calculator" — background reading on the inputs & formulas -->
+      {
+        guides.length > 0 && (
+          <aside class="mt-6 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900">
+            <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">
+              Guides for this calculator
+            </h2>
+            <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+              Background reading on the inputs and formulas behind this tool.
+            </p>
+            <ul class="mt-3 flex flex-wrap gap-2">
+              {guides.map((g) => (
+                <li>
+                  <a
+                    href={`/guides/${g.id}`}
+                    class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
+                  >
+                    {g.data.title}
                   </a>
                 </li>
               ))}

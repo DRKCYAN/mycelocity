@@ -1,6 +1,7 @@
 ---
 import CalculatorShell from '@/components/CalculatorShell.astro';
 import { CALCULATORS, getCalculator } from '@/lib/calculators';
+import { guidesForCalculator } from '@/lib/guides';
 
 // Islands must be referenced statically (not via a variable) so Astro can
 // resolve each one for client-side hydration.
@@ -24,9 +25,10 @@ const calc = getCalculator(slug!);
 if (!calc) {
   return Astro.redirect('/404');
 }
+const relatedGuides = await guidesForCalculator(calc.id);
 ---
 
-<CalculatorShell calc={calc}>
+<CalculatorShell calc={calc} guides={relatedGuides}>
   {calc.slug === 'biological-efficiency' && <BiologicalEfficiency client:visible />}
   {calc.slug === 'contamination-loss' && <ContaminationLoss client:visible />}
   {calc.slug === 'substrate-moisture' && <SubstrateMoisture client:visible />}

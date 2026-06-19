@@ -1,0 +1,70 @@
+---
+import Base from '@/layouts/Base.astro';
+import TopNav from '@/components/TopNav.astro';
+import { getGuides } from '@/lib/guides';
+
+const guides = await getGuides();
+const path = '/guides';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Mushroom growing guides',
+  description:
+    'Practical mushroom-growing guides, each tied to a connected Mycelocity calculator.',
+  url: new URL(path, Astro.site ?? 'https://mycelocity.com').href,
+  hasPart: guides.map((g) => ({
+    '@type': 'Article',
+    name: g.data.title,
+    url: new URL(`/guides/${g.id}`, Astro.site ?? 'https://mycelocity.com').href,
+  })),
+};
+---
+
+<Base
+  title="Mushroom Growing Guides | Mycelocity"
+  description="Practical, no-fluff guides to growing mushrooms as a business — biological efficiency, substrate hydration, contamination, costing and farm economics — each tied to a connected calculator."
+  jsonLd={jsonLd}
+  path={path}
+>
+  <TopNav />
+
+  <main>
+    <div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-10 lg:py-14">
+      <nav class="mb-4 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-600 dark:hover:text-accent-400">Home</a>
+        <span class="mx-1.5">/</span>
+        <span class="text-stone-700 dark:text-stone-300">Guides</span>
+      </nav>
+
+      <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
+        Guides
+      </h1>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        Practical references for growing mushrooms as a business. Each guide is tied to the
+        calculators it supports — read how the numbers work, then run your own.
+      </p>
+
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {
+          guides.map((guide) => (
+            <a
+              href={`/guides/${guide.id}`}
+              class="group rounded-xl border border-stone-200 bg-paper p-5 transition-colors hover:border-chanterelle-400 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-chanterelle-500"
+            >
+              {guide.data.category && (
+                <span class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-2 py-0.5 text-xs font-medium text-accent-700 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300">
+                  {guide.data.category}
+                </span>
+              )}
+              <h2 class="mt-2 text-lg font-semibold text-stone-900 group-hover:text-accent-700 dark:text-stone-100 dark:group-hover:text-accent-400">
+                {guide.data.title}
+              </h2>
+              <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">{guide.data.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </main>
+</Base>
