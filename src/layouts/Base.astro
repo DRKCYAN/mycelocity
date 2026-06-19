@@ -1,0 +1,77 @@
+---
+import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Optional JSON-LD object injected into <head> (e.g. WebApplication). */
+  jsonLd?: Record<string, unknown>;
+  /** Canonical path, e.g. "/calculators/profit-per-block". */
+  path?: string;
+}
+
+const { title, description, jsonLd, path = '' } = Astro.props;
+const canonical = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Mycelocity" />
+    <meta name="twitter:card" content="summary" />
+
+    <ClientRouter />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    {
+      jsonLd && (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(jsonLd)}
+        />
+      )
+    }
+
+    <!-- No-flash theme init: runs before paint, and re-applies after each
+         view-transition swap so the theme never flashes during navigation. -->
+    <script is:inline>
+      (function () {
+        function applyTheme() {
+          try {
+            const stored = localStorage.getItem('mycelocity-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const dark = stored === 'dark' || (!stored && prefersDark);
+            document.documentElement.classList.toggle('dark', dark);
+          } catch (e) {}
+        }
+        applyTheme();
+        if (!window.__myceloThemeBound) {
+          window.__myceloThemeBound = true;
+          document.addEventListener('astro:after-swap', applyTheme);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

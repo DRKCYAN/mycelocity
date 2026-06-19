@@ -1,0 +1,98 @@
+---
+import Base from '@/layouts/Base.astro';
+import Sidebar from '@/components/Sidebar.astro';
+import { CATEGORIES, calculatorsByCategory, CALCULATORS } from '@/lib/calculators';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Mycelocity',
+  description:
+    'A connected hub of calculators for mushroom-growing businesses — yield, cost, profit, capacity and ROI that all share one grow profile.',
+  url: 'https://mycelocity.com/',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  isAccessibleForFree: true,
+};
+---
+
+<Base
+  title="Mycelocity — Connected Calculators for Mushroom Farms"
+  description="A connected hub of calculators for mushroom-growing businesses. Yield, COGS, profit per block, break-even, capacity and ROI all share one grow profile — change a value once and every calculator updates."
+  jsonLd={jsonLd}
+  path="/"
+>
+  <Sidebar />
+
+  <main class="lg:ml-72">
+    <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-10 lg:py-16">
+      <!-- Hero -->
+      <section class="max-w-3xl">
+        <span
+          class="inline-flex items-center rounded-sm border border-accent-300 bg-accent-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-accent-700 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300"
+        >
+          The connected calculator hub
+        </span>
+        <h1
+          class="mt-4 text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl dark:text-stone-50"
+        >
+          Run the numbers on your mushroom farm — all in one connected model.
+        </h1>
+        <p class="mt-4 text-lg leading-relaxed text-stone-600 dark:text-stone-300">
+          Mycelocity is a hub of {CALCULATORS.length} calculators that share a single grow profile. Set your
+          biological efficiency, price or substrate cost once and watch yield, revenue, margin, break-even
+          and ROI recompute across every calculator. Other tools give you isolated calculators — this one
+          connects them.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a
+            href="/calculators/profit-per-block"
+            class="inline-flex items-center rounded-lg bg-chanterelle-400 px-5 py-2.5 text-sm font-semibold text-stone-900 hover:bg-chanterelle-500"
+          >
+            Try Profit per Block →
+          </a>
+          <a
+            href="/calculators/biological-efficiency"
+            class="inline-flex items-center rounded-lg border border-stone-300 bg-paper px-5 py-2.5 text-sm font-semibold text-stone-700 hover:border-accent-400 hover:text-accent-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:border-accent-500"
+          >
+            Start with yield
+          </a>
+        </div>
+      </section>
+
+      <!-- Calculators by category -->
+      <section class="mt-14">
+        {
+          CATEGORIES.map((cat) => (
+            <div class="mb-10">
+              <div class="mb-3 flex items-baseline justify-between gap-4">
+                <h2 class="text-xl font-bold text-stone-900 dark:text-stone-100">
+                  <a href={`/${cat.slug}`} class="hover:text-accent-600 dark:hover:text-accent-400">
+                    {cat.name}
+                  </a>
+                </h2>
+                <span class="text-sm text-stone-500 dark:text-stone-400">{cat.blurb}</span>
+              </div>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {calculatorsByCategory(cat.name).map((calc) => (
+                  <a
+                    href={`/calculators/${calc.slug}`}
+                    class="group rounded-xl border border-stone-200 bg-paper p-4 transition-colors hover:border-chanterelle-400 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-chanterelle-500"
+                  >
+                    <h3 class="font-semibold text-stone-900 group-hover:text-accent-700 dark:text-stone-100 dark:group-hover:text-accent-400">
+                      {calc.title}
+                    </h3>
+                    <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                      {calc.description}
+                    </p>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </section>
+    </div>
+  </main>
+</Base>

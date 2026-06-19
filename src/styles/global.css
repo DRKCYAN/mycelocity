@@ -1,0 +1,161 @@
+@import 'tailwindcss';
+
+/* Class-based dark mode: toggling `.dark` on <html> flips the theme. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* ── Botanical palette ────────────────────────────────────────────────
+     Forest green is the brand/structure colour (links, positive numbers,
+     dividers). Chanterelle — a muted golden apricot — drives buttons and
+     active states. Clay/brick flags negatives & warnings. Neutrals are a
+     warm parchment→bark ramp (overriding Tailwind's cold `stone`). */
+
+  /* Primary — forest green */
+  --color-accent-50: #eef3ec;
+  --color-accent-100: #d6e3d0;
+  --color-accent-200: #aecfa5;
+  --color-accent-300: #7fae75;
+  --color-accent-400: #548a4d;
+  --color-accent-500: #3a6f37;
+  --color-accent-600: #2f5d3a;
+  --color-accent-700: #264a2f;
+  --color-accent-800: #1e3a26;
+  --color-accent-900: #172d1e;
+
+  /* Secondary — chanterelle (golden apricot) — buttons & active states */
+  --color-chanterelle-50: #fbf2e2;
+  --color-chanterelle-100: #f6e3c4;
+  --color-chanterelle-200: #ecca91;
+  --color-chanterelle-300: #e0ad5e;
+  --color-chanterelle-400: #d4953f;
+  --color-chanterelle-500: #c07f32;
+  --color-chanterelle-600: #a66a2a;
+  --color-chanterelle-700: #84531f;
+  --color-chanterelle-800: #6a4319;
+  --color-chanterelle-900: #563716;
+
+  /* Tertiary — clay / brick — negatives & warnings */
+  --color-clay-50: #f7e9e3;
+  --color-clay-100: #efcfc3;
+  --color-clay-200: #e0a892;
+  --color-clay-300: #d08a76;
+  --color-clay-400: #c8755c;
+  --color-clay-500: #b0563f;
+  --color-clay-600: #97462f;
+  --color-clay-700: #7c3a28;
+
+  /* Warm neutral ramp — overrides Tailwind `stone` app-wide.
+     Light: parchment → bark ink. Dark: deep bark. */
+  --color-stone-50: #f4efe3; /* parchment — page background */
+  --color-stone-100: #ece4d3; /* oatmeal — muted result cards, formula */
+  --color-stone-200: #ddd1ba; /* hairline borders */
+  --color-stone-300: #c7b89c; /* field borders */
+  --color-stone-400: #8c7e63; /* faint labels */
+  --color-stone-500: #6f6450; /* muted text */
+  --color-stone-600: #574d3c; /* body text */
+  --color-stone-700: #41382b; /* strong labels / dark borders */
+  --color-stone-800: #322b20; /* dark borders / surfaces */
+  --color-stone-900: #262017; /* bark ink (light) / dark cards */
+  --color-stone-950: #1b1710; /* dark page background */
+
+  /* Lifted card surface used for input ("what you type") panels in light
+     mode — a warm near-white that floats above the parchment page. */
+  --color-paper: #fbf8f0;
+
+  /* All-serif: a sturdy slab with clean lining numerals that stays legible
+     for small input fields and data digits. */
+  --font-sans: 'Zilla Slab', Georgia, Cambria, 'Times New Roman', serif;
+
+  /* Crisp, restrained radii — no overly-rounded cards. */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.1875rem;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.3125rem;
+  --radius-2xl: 0.4375rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Parchment page with a faint forest "spore" speckle for paper texture. */
+body {
+  @apply text-stone-900 antialiased;
+  background-color: var(--color-stone-50);
+  background-image: radial-gradient(circle, rgba(47, 93, 58, 0.045) 0.5px, transparent 0.6px);
+  background-size: 22px 22px;
+}
+
+.dark body {
+  @apply text-stone-100;
+  background-color: var(--color-stone-950);
+  background-image: radial-gradient(circle, rgba(236, 228, 211, 0.03) 0.5px, transparent 0.6px);
+}
+
+/* Lining, tabular figures for editable numbers so digits align and stay
+   readable at small sizes. */
+input[type='number'] {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Recompute highlight — a brief inset chanterelle ring that settles in,
+   rather than a spreading dark-mode glow. */
+@keyframes result-pulse {
+  0% {
+    box-shadow: inset 0 0 0 2px rgba(212, 149, 63, 0.6);
+  }
+  100% {
+    box-shadow: inset 0 0 0 2px rgba(212, 149, 63, 0);
+  }
+}
+
+.result-pulse {
+  animation: result-pulse 0.6s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-pulse {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Range slider — track in warm neutral, thumb in chanterelle (active control). */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 9999px;
+  @apply bg-stone-200;
+  outline: none;
+}
+.dark input[type='range'] {
+  @apply bg-stone-700;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  @apply bg-chanterelle-500;
+  cursor: pointer;
+  border: 2px solid var(--color-paper);
+  box-shadow: 0 1px 2px rgba(38, 32, 23, 0.35);
+}
+.dark input[type='range']::-webkit-slider-thumb {
+  border-color: var(--color-stone-900);
+}
+input[type='range']::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  @apply bg-chanterelle-500;
+  cursor: pointer;
+  border: 2px solid var(--color-paper);
+}
+.dark input[type='range']::-moz-range-thumb {
+  border-color: var(--color-stone-900);
+}
