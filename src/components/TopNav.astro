@@ -29,20 +29,22 @@ const navLinkClass = (active: boolean) =>
 
     <!-- Desktop nav -->
     <nav class="hidden items-center gap-1 lg:flex">
-      <div class="relative" data-dropdown>
+      <div class="group relative">
         <button
           type="button"
-          data-dropdown-toggle
           aria-haspopup="true"
-          aria-expanded="false"
           class={`flex items-center gap-1 ${navLinkClass(isToolsActive)}`}
         >
           Tools
           <span aria-hidden="true" class="text-xs">▾</span>
         </button>
+        <!-- Pure CSS hover dropdown: the parent nav is already `hidden lg:flex`,
+             so this only needs visibility/opacity control, not display — that
+             avoids the earlier bug where a responsive display utility (sm:grid)
+             unconditionally overrode `hidden` at desktop widths regardless of
+             hover state. group-focus-within covers keyboard users. -->
         <div
-          data-dropdown-panel
-          class="absolute left-0 z-40 mt-2 hidden w-[34rem] gap-4 rounded-xl border border-stone-200 bg-paper p-5 shadow-lg sm:grid sm:grid-cols-2 dark:border-stone-800 dark:bg-stone-900"
+          class="invisible absolute left-0 top-full grid w-[34rem] grid-cols-2 gap-4 rounded-xl border border-stone-200 bg-paper p-5 opacity-0 shadow-lg transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 dark:border-stone-800 dark:bg-stone-900"
         >
           {
             CATEGORIES.map((cat) => (
@@ -193,29 +195,8 @@ const navLinkClass = (active: boolean) =>
       }));
       document.querySelectorAll('[data-menu-close]').forEach((b) => b.addEventListener('click', closeMobile));
 
-      const dropdown = document.querySelector('[data-dropdown]');
-      const toggle = dropdown?.querySelector('[data-dropdown-toggle]');
-      const panel = dropdown?.querySelector('[data-dropdown-panel]');
-      const closeDropdown = () => {
-        panel?.classList.add('hidden');
-        toggle?.setAttribute('aria-expanded', 'false');
-      };
-      toggle?.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = !panel?.classList.contains('hidden');
-        if (isOpen) {
-          closeDropdown();
-        } else {
-          panel?.classList.remove('hidden');
-          toggle?.setAttribute('aria-expanded', 'true');
-        }
-      });
-      document.addEventListener('click', (e) => {
-        if (dropdown && !dropdown.contains(e.target)) closeDropdown();
-      });
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          closeDropdown();
           closeMobile();
         }
       });
