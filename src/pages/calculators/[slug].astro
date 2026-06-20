@@ -1,20 +1,8 @@
 ---
-import CalculatorShell from '@/components/CalculatorShell.astro';
+// Calculators are now consolidated onto one page (/calculators). This route
+// is kept as a thin redirect shell so existing bookmarks/inbound links to
+// individual calculator pages still land in the right place.
 import { CALCULATORS, getCalculator } from '@/lib/calculators';
-import { guidesForCalculator } from '@/lib/guides';
-
-// Islands must be referenced statically (not via a variable) so Astro can
-// resolve each one for client-side hydration.
-import BiologicalEfficiency from '@/components/calculators/BiologicalEfficiency.tsx';
-import ContaminationLoss from '@/components/calculators/ContaminationLoss.tsx';
-import SubstrateMoisture from '@/components/calculators/SubstrateMoisture.tsx';
-import CogsPerBlock from '@/components/calculators/CogsPerBlock.tsx';
-import ProductionCapacity from '@/components/calculators/ProductionCapacity.tsx';
-import ProfitPerBlock from '@/components/calculators/ProfitPerBlock.tsx';
-import BreakEven from '@/components/calculators/BreakEven.tsx';
-import RevenuePerSquareFoot from '@/components/calculators/RevenuePerSquareFoot.tsx';
-import StartupCost from '@/components/calculators/StartupCost.tsx';
-import PaybackRoi from '@/components/calculators/PaybackRoi.tsx';
 
 export function getStaticPaths() {
   return CALCULATORS.map((calc) => ({ params: { slug: calc.slug } }));
@@ -25,18 +13,5 @@ const calc = getCalculator(slug!);
 if (!calc) {
   return Astro.redirect('/404');
 }
-const relatedGuides = await guidesForCalculator(calc.id);
+return Astro.redirect(`/calculators#${calc.slug}`, 301);
 ---
-
-<CalculatorShell calc={calc} guides={relatedGuides}>
-  {calc.slug === 'biological-efficiency' && <BiologicalEfficiency client:visible />}
-  {calc.slug === 'contamination-loss' && <ContaminationLoss client:visible />}
-  {calc.slug === 'substrate-moisture' && <SubstrateMoisture client:visible />}
-  {calc.slug === 'cogs-per-block' && <CogsPerBlock client:visible />}
-  {calc.slug === 'production-capacity' && <ProductionCapacity client:visible />}
-  {calc.slug === 'profit-per-block' && <ProfitPerBlock client:load />}
-  {calc.slug === 'break-even' && <BreakEven client:visible />}
-  {calc.slug === 'revenue-per-square-foot' && <RevenuePerSquareFoot client:visible />}
-  {calc.slug === 'startup-cost' && <StartupCost client:visible />}
-  {calc.slug === 'payback-roi' && <PaybackRoi client:visible />}
-</CalculatorShell>

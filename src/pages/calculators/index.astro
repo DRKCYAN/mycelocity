@@ -1,0 +1,218 @@
+---
+import Base from '@/layouts/Base.astro';
+import TopNav from '@/components/TopNav.astro';
+import { CALCULATORS, CATEGORIES, calculatorsByCategory, calculatorById, type Calculator } from '@/lib/calculators';
+import { guidesForCalculator, type Guide } from '@/lib/guides';
+
+// Islands must be referenced statically (not via a variable) so Astro can
+// resolve each one for client-side hydration.
+import BiologicalEfficiency from '@/components/calculators/BiologicalEfficiency.tsx';
+import ContaminationLoss from '@/components/calculators/ContaminationLoss.tsx';
+import SubstrateMoisture from '@/components/calculators/SubstrateMoisture.tsx';
+import CogsPerBlock from '@/components/calculators/CogsPerBlock.tsx';
+import ProductionCapacity from '@/components/calculators/ProductionCapacity.tsx';
+import ProfitPerBlock from '@/components/calculators/ProfitPerBlock.tsx';
+import BreakEven from '@/components/calculators/BreakEven.tsx';
+import RevenuePerSquareFoot from '@/components/calculators/RevenuePerSquareFoot.tsx';
+import StartupCost from '@/components/calculators/StartupCost.tsx';
+import PaybackRoi from '@/components/calculators/PaybackRoi.tsx';
+
+// Can't `await` inside a JSX .map() callback, so resolve every calculator's
+// related guides up front and key them by calculator id.
+const guidesByCalcId = new Map<string, Guide[]>(
+  await Promise.all(
+    CALCULATORS.map(async (c) => [c.id, await guidesForCalculator(c.id)] as const)
+  )
+);
+
+const path = '/calculators';
+const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
+
+// One CollectionPage JSON-LD covering all 10 tools, mirroring the shape the
+// old per-category pages used — just scoped to the whole suite now.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Mushroom Farm Calculators',
+  description:
+    '10 connected mushroom farm calculators in one place — change biological efficiency, cost or price once and watch yield, margin, break-even and ROI recompute live across every tool.',
+  url,
+  hasPart: CALCULATORS.map((c) => ({
+    '@type': 'WebApplication',
+    name: c.title,
+    url: `${url}#${c.slug}`,
+  })),
+};
+---
+
+<Base
+  title="Mushroom Farm Calculators — Yield, Cost, Profit & ROI | Mycelocity"
+  description="10 connected mushroom farm calculators in one place — change biological efficiency, cost or price once and watch yield, margin, break-even and ROI recompute live across every tool."
+  jsonLd={jsonLd}
+  path={path}
+>
+  <TopNav />
+
+  <main>
+    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+      <!-- Breadcrumb -->
+      <nav class="mb-4 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
+        <a href="/" class="hover:text-accent-600 dark:hover:text-accent-400">Home</a>
+        <span class="mx-1.5">/</span>
+        <span class="text-stone-700 dark:text-stone-300">Calculators</span>
+      </nav>
+
+      <header class="mb-6">
+        <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
+          Mushroom Farm Calculators
+        </h1>
+        <p class="mt-3 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          All 10 calculators share one grow profile — change a value in one and every connected
+          calculator below recomputes live, no navigating away required.
+        </p>
+      </header>
+
+      <!-- Export placeholder — integration point for the future paid "export
+           all calculations to spreadsheet" feature. Not functional yet. -->
+      <div
+        class="mb-10 rounded-xl border border-dashed border-chanterelle-300 bg-chanterelle-50 px-4 py-3 text-sm dark:border-chanterelle-700 dark:bg-chanterelle-900/20"
+      >
+        <span class="font-medium text-stone-700 dark:text-stone-200">
+          Export to spreadsheet
+        </span>
+        <span class="ml-1 text-stone-500 dark:text-stone-400">— coming soon.</span>
+      </div>
+
+      <!-- Jump-nav: every calculator on this page, grouped by category -->
+      <nav
+        class="mb-10 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900"
+        aria-label="Jump to calculator"
+      >
+        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">Jump to a calculator</h2>
+        <div class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
+          {
+            CATEGORIES.map((cat) => (
+              <div>
+                <a
+                  href={`#${cat.slug}`}
+                  class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-400 hover:text-accent-600 dark:text-stone-500 dark:hover:text-accent-400"
+                >
+                  {cat.name}
+                </a>
+                <ul class="flex flex-wrap gap-2">
+                  {calculatorsByCategory(cat.name).map((calc) => (
+                    <li>
+                      <a
+                        href={`#${calc.slug}`}
+                        class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
+                      >
+                        {calc.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </nav>
+
+      <!-- Per-category sections -->
+      {
+        CATEGORIES.map((cat) => (
+          <section id={cat.slug} class="mb-14 scroll-mt-20">
+            <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              {cat.name}
+            </h2>
+            <p class="mt-2 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+              {cat.blurb}
+            </p>
+
+            <div class="mt-8 space-y-12">
+              {calculatorsByCategory(cat.name).map((calc) => {
+                const connected = calc.connectedTo
+                  .map((id) => calculatorById(id))
+                  .filter((c): c is Calculator => Boolean(c));
+                const guides = guidesByCalcId.get(calc.id) ?? [];
+
+                return (
+                  <section id={calc.slug} class="scroll-mt-20 border-t border-stone-200 pt-8 dark:border-stone-800">
+                    <h3 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                      {calc.title}
+                    </h3>
+                    <p class="mt-3 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+                      {calc.intro}
+                    </p>
+                    <div class="mt-4 rounded-lg border border-stone-200 bg-stone-100 px-4 py-2.5 font-mono text-xs leading-relaxed text-stone-600 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-400">
+                      <span class="font-semibold text-stone-500 dark:text-stone-500">Formula&nbsp;</span>
+                      {calc.formula}
+                    </div>
+
+                    <div class="mt-8">
+                      {calc.slug === 'biological-efficiency' && <BiologicalEfficiency client:visible />}
+                      {calc.slug === 'contamination-loss' && <ContaminationLoss client:visible />}
+                      {calc.slug === 'substrate-moisture' && <SubstrateMoisture client:visible />}
+                      {calc.slug === 'cogs-per-block' && <CogsPerBlock client:visible />}
+                      {calc.slug === 'production-capacity' && <ProductionCapacity client:visible />}
+                      {calc.slug === 'profit-per-block' && <ProfitPerBlock client:visible />}
+                      {calc.slug === 'break-even' && <BreakEven client:visible />}
+                      {calc.slug === 'revenue-per-square-foot' && <RevenuePerSquareFoot client:visible />}
+                      {calc.slug === 'startup-cost' && <StartupCost client:visible />}
+                      {calc.slug === 'payback-roi' && <PaybackRoi client:visible />}
+                    </div>
+
+                    {connected.length > 0 && (
+                      <aside class="mt-8 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900">
+                        <h4 class="text-sm font-semibold text-stone-700 dark:text-stone-200">
+                          Connected to
+                        </h4>
+                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                          These calculators share inputs with this one — values you set here carry over.
+                        </p>
+                        <ul class="mt-3 flex flex-wrap gap-2">
+                          {connected.map((c) => (
+                            <li>
+                              <a
+                                href={`#${c.slug}`}
+                                class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
+                              >
+                                {c.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </aside>
+                    )}
+
+                    {guides.length > 0 && (
+                      <aside class="mt-6 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900">
+                        <h4 class="text-sm font-semibold text-stone-700 dark:text-stone-200">
+                          Guides for this calculator
+                        </h4>
+                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+                          Background reading on the inputs and formulas behind this tool.
+                        </p>
+                        <ul class="mt-3 flex flex-wrap gap-2">
+                          {guides.map((g) => (
+                            <li>
+                              <a
+                                href={`/guides/${g.id}`}
+                                class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
+                              >
+                                {g.data.title}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </aside>
+                    )}
+                  </section>
+                );
+              })}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+</Base>

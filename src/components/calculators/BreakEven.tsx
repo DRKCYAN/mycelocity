@@ -31,7 +31,7 @@ export default function BreakEven() {
             </strong>
           </span>
           <a
-            href="/calculators/profit-per-block"
+            href="#profit-per-block"
             className="ml-2 font-medium text-accent-700 underline-offset-2 hover:underline dark:text-accent-400"
           >
             adjust →

@@ -40,13 +40,13 @@ export default function PaybackRoi() {
           </ul>
           <div className="mt-3 flex flex-wrap gap-2">
             <a
-              href="/calculators/startup-cost"
+              href="#startup-cost"
               className="font-medium text-accent-700 underline-offset-2 hover:underline dark:text-accent-400"
             >
               Edit capital →
             </a>
             <a
-              href="/calculators/profit-per-block"
+              href="#profit-per-block"
               className="font-medium text-accent-700 underline-offset-2 hover:underline dark:text-accent-400"
             >
               Edit profit →
