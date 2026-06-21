@@ -2,7 +2,8 @@
 title: Understanding Biological Efficiency
 description: What biological efficiency (BE) really measures, why it is quoted against dry substrate weight, and how to read the yield it predicts per block.
 seoTitle: 'Biological Efficiency Explained — Mushroom BE & Yield | Mycelocity'
-order: 1
+datePublished: '2026-06-19'
+order: 4
 category: Biology
 relatedCalculators:
   - biological-efficiency

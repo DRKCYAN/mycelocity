@@ -4,21 +4,9 @@ import TopNav from '@/components/TopNav.astro';
 import FlowMap from '@/components/FlowMap.astro';
 import CalculatorToc from '@/components/CalculatorToc.astro';
 import GrowProfilePanel from '@/components/GrowProfilePanel.tsx';
+import CalculatorIsland from '@/components/CalculatorIsland.astro';
 import { CALCULATORS, CATEGORIES, calculatorsByCategory, calculatorById, type Calculator } from '@/lib/calculators';
 import { categoryTone, toneChip, toneRail, toneDot } from '@/lib/tones';
-
-// Islands must be referenced statically (not via a variable) so Astro can
-// resolve each one for client-side hydration.
-import BiologicalEfficiency from '@/components/calculators/BiologicalEfficiency.tsx';
-import ContaminationLoss from '@/components/calculators/ContaminationLoss.tsx';
-import SubstrateMoisture from '@/components/calculators/SubstrateMoisture.tsx';
-import CogsPerBlock from '@/components/calculators/CogsPerBlock.tsx';
-import ProductionCapacity from '@/components/calculators/ProductionCapacity.tsx';
-import ProfitPerBlock from '@/components/calculators/ProfitPerBlock.tsx';
-import BreakEven from '@/components/calculators/BreakEven.tsx';
-import RevenuePerSquareFoot from '@/components/calculators/RevenuePerSquareFoot.tsx';
-import StartupCost from '@/components/calculators/StartupCost.tsx';
-import PaybackRoi from '@/components/calculators/PaybackRoi.tsx';
 
 const path = '/calculators';
 const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
@@ -35,13 +23,13 @@ const jsonLd = {
   hasPart: CALCULATORS.map((c) => ({
     '@type': 'WebApplication',
     name: c.title,
-    url: `${url}#${c.slug}`,
+    url: new URL(`/calculators/${c.slug}`, Astro.site ?? 'https://mycelocity.com').href,
   })),
 };
 ---
 
 <Base
-  title="Mushroom Farm Calculators — Yield, Cost, Profit & ROI | Mycelocity"
+  title="Mushroom Business & Farm Calculators — Yield, Cost, Profit & ROI | Mycelocity"
   description="10 connected mushroom farm calculators in one place — change biological efficiency, cost or price once and watch yield, margin, break-even and ROI recompute live across every tool."
   jsonLd={jsonLd}
   path={path}
@@ -67,11 +55,12 @@ const jsonLd = {
 
       <header class="mb-6">
         <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
-          Mushroom Farm Calculators
+          Mushroom Business & Farm Calculators
         </h1>
         <p class="mt-3 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
-          All 10 calculators share one grow profile — change a value in one and every connected
-          calculator below recomputes live, no navigating away required.
+          A connected mushroom business calculator suite — all 10 tools share one grow profile, so
+          you change a value in one and every calculator below recomputes live, no navigating away
+          required. Each also has its own page if you just need a single tool.
         </p>
       </header>
 
@@ -134,9 +123,17 @@ const jsonLd = {
 
                 return (
                   <section id={calc.slug} class="scroll-mt-20 border-t border-stone-200 pt-8 dark:border-stone-800">
-                    <h3 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-                      {calc.title}
-                    </h3>
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                      <h3 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                        {calc.title}
+                      </h3>
+                      <a
+                        href={`/calculators/${calc.slug}`}
+                        class="text-sm font-medium text-accent-600 hover:text-accent-700 dark:text-accent-400 dark:hover:text-accent-300"
+                      >
+                        Open full page&nbsp;↗
+                      </a>
+                    </div>
                     <p class="mt-3 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
                       {calc.intro}
                     </p>
@@ -146,16 +143,7 @@ const jsonLd = {
                     </div>
 
                     <div class="mt-8">
-                      {calc.slug === 'biological-efficiency' && <BiologicalEfficiency client:visible />}
-                      {calc.slug === 'contamination-loss' && <ContaminationLoss client:visible />}
-                      {calc.slug === 'substrate-moisture' && <SubstrateMoisture client:visible />}
-                      {calc.slug === 'cogs-per-block' && <CogsPerBlock client:visible />}
-                      {calc.slug === 'production-capacity' && <ProductionCapacity client:visible />}
-                      {calc.slug === 'profit-per-block' && <ProfitPerBlock client:visible />}
-                      {calc.slug === 'break-even' && <BreakEven client:visible />}
-                      {calc.slug === 'revenue-per-square-foot' && <RevenuePerSquareFoot client:visible />}
-                      {calc.slug === 'startup-cost' && <StartupCost client:visible />}
-                      {calc.slug === 'payback-roi' && <PaybackRoi client:visible />}
+                      <CalculatorIsland slug={calc.slug} />
                     </div>
 
                     {connected.length > 0 && (

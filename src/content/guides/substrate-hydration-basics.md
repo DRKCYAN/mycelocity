@@ -2,7 +2,8 @@
 title: Substrate Moisture & Hydration Basics
 description: How to measure substrate moisture from wet and dry weight, what field capacity means, and why hydration sits upstream of both yield and contamination.
 seoTitle: 'Substrate Moisture & Hydration Basics for Mushrooms | Mycelocity'
-order: 2
+datePublished: '2026-06-19'
+order: 5
 category: Biology
 relatedCalculators:
   - substrate-moisture

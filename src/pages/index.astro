@@ -1,53 +1,175 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TopNav from '@/components/TopNav.astro';
+import { CATEGORIES, calculatorsByCategory } from '@/lib/calculators';
+import { categoryTone, toneRail, toneDot } from '@/lib/tones';
 
-// Homepage body is intentionally empty — content/layout to be decided later.
-// SEO metadata is kept intact so the route stays indexable in the meantime.
+// FAQ content — rendered once as visible markup AND as FAQPage structured data
+// below, so the two never drift.
+const faqs = [
+  {
+    q: 'What is a mushroom growing calculator?',
+    a: 'A mushroom growing calculator turns the numbers behind a grow — biological efficiency, substrate weight, contamination rate, cost and price — into the results you actually plan around: fresh yield per block, cost of goods, profit, break-even and ROI. Mycelocity gives you ten of them, connected so one input updates every result.',
+  },
+  {
+    q: 'How do I calculate mushroom yield?',
+    a: 'Fresh yield comes from biological efficiency (BE) and the dry weight of your substrate: yield = (BE ÷ 100) × dry weight. Enter your BE percentage and dry substrate weight per block in the Biological Efficiency calculator to get yield in grams and pounds, split across each flush.',
+  },
+  {
+    q: 'How do I calculate mushroom farm profit and break-even?',
+    a: 'Profit per block is revenue (yield × price) minus cost of goods sold; break-even is your monthly fixed costs divided by the contribution margin per block. Because the calculators are connected, changing yield, price or cost once recomputes profit, break-even, ROI and payback together — so you can model the whole mushroom business in one place.',
+  },
+  {
+    q: 'Are the calculators free?',
+    a: 'Yes. Every calculator on Mycelocity is free to use, with no sign-up required.',
+  },
+];
+
+const siteUrl = (p: string) => new URL(p, Astro.site ?? 'https://mycelocity.com').href;
+
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'WebApplication',
-  name: 'Mycelocity',
-  description:
-    'A central hub for mushroom growing — practical guides plus a connected suite of calculators for yield, cost, profit, capacity and ROI that all share one grow profile.',
-  url: 'https://mycelocity.com/',
-  applicationCategory: 'BusinessApplication',
-  operatingSystem: 'Any',
-  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  isAccessibleForFree: true,
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Mycelocity',
+      url: siteUrl('/'),
+      logo: siteUrl('/logo.png'),
+      description:
+        'Free, connected calculators and practical guides for growing mushrooms as a business.',
+      // sameAs: add social/profile URLs here to strengthen the brand entity.
+    },
+    {
+      '@type': 'WebApplication',
+      name: 'Mycelocity — Mushroom Growing Calculators',
+      description:
+        'A free, connected suite of mushroom growing calculators for yield, cost, profit, break-even, capacity and ROI — all sharing one grow profile so changing a value once updates every tool.',
+      url: siteUrl('/'),
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Any',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      isAccessibleForFree: true,
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+  ],
 };
 ---
 
 <Base
-  title="Mycelocity — The Hub for Growing Mushrooms as a Business"
-  description="A central hub for mushroom growing: practical guides paired with a connected suite of calculators. Yield, COGS, profit per block, break-even, capacity and ROI share one grow profile — change a value once and every calculator updates."
+  title="Mushroom Growing Calculator — Free Yield, Cost, Profit & ROI Tools | Mycelocity"
+  description="Free mushroom growing calculators for yield, cost, profit, break-even, capacity and ROI. A connected mushroom business calculator suite — change one value and every result updates live."
   jsonLd={jsonLd}
   path="/"
 >
   <TopNav />
 
   <main>
-    <div class="mx-auto flex max-w-2xl flex-col items-center px-4 py-24 text-center sm:px-6 lg:px-10">
+    <!-- Hero -->
+    <div class="mx-auto max-w-3xl px-4 py-16 text-center sm:px-6 lg:px-10 lg:py-24">
       <h1 class="text-4xl font-bold tracking-tight text-stone-900 sm:text-5xl dark:text-stone-50">
-        Mycelocity
+        Free Mushroom Growing Calculators
       </h1>
       <p class="mt-4 text-lg text-stone-600 dark:text-stone-300">
-        The central hub for your mushroom business.
+        The connected hub for growing mushrooms as a business — yield, cost, profit, break-even and ROI in one place.
       </p>
-      <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+      <div class="mx-auto mt-6 max-w-2xl space-y-4 text-left text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        <p>
+          Mycelocity is a free, connected suite of <strong>mushroom growing calculators</strong> built for people
+          running — or planning — a mushroom farm. Use a single calculator to size up fresh yield from biological
+          efficiency, or run the whole model as a <strong>mushroom business calculator</strong>: yield flows into
+          revenue, cost into margin, and margin into break-even, payback and ROI.
+        </p>
+        <p>
+          Every tool shares one grow profile, so you change a number once and watch the entire plan recompute. Pick a
+          single calculator below, or open the connected hub to model your farm end to end.
+        </p>
+      </div>
+      <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <a
           href="/calculators"
           class="inline-flex items-center rounded-lg bg-chanterelle-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-chanterelle-600"
         >
-          Calculators
+          Open the calculator hub
         </a>
         <a
           href="/guides"
           class="inline-flex items-center rounded-lg border border-stone-300 bg-paper px-5 py-2.5 text-sm font-semibold text-stone-700 hover:border-accent-400 hover:text-accent-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:border-accent-500"
         >
-          Guides
+          Read the guides
         </a>
       </div>
+    </div>
+
+    <!-- Calculator overview, grouped by category -->
+    <div class="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-10">
+      <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+        All 10 mushroom calculators
+      </h2>
+      <p class="mt-2 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        From biology to finance — each has its own page, and all of them connect on the hub.
+      </p>
+
+      <div class="mt-8 space-y-10">
+        {
+          CATEGORIES.map((cat) => {
+            const tone = categoryTone(cat.name);
+            return (
+              <section class={`border-l-4 pl-5 sm:pl-6 ${toneRail[tone]}`}>
+                <div class="flex items-center gap-2">
+                  <span class={`h-3 w-3 rounded-full ${toneDot[tone]}`} />
+                  <h3 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                    {cat.name}
+                  </h3>
+                </div>
+                <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600 dark:text-stone-300">
+                  {cat.blurb}
+                </p>
+                <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+                  {calculatorsByCategory(cat.name).map((calc) => (
+                    <li>
+                      <a
+                        href={`/calculators/${calc.slug}`}
+                        class="block h-full rounded-xl border border-stone-200 bg-paper p-4 transition-colors hover:border-accent-400 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-accent-500"
+                      >
+                        <span class="block font-semibold text-stone-900 dark:text-stone-50">
+                          {calc.title}
+                        </span>
+                        <span class="mt-1 block text-sm leading-relaxed text-stone-600 dark:text-stone-300">
+                          {calc.description}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })
+        }
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <div class="mx-auto max-w-3xl px-4 pb-20 sm:px-6 lg:px-10">
+      <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+        Frequently asked questions
+      </h2>
+      <dl class="mt-6 space-y-6">
+        {
+          faqs.map((f) => (
+            <div class="border-t border-stone-200 pt-6 dark:border-stone-800">
+              <dt class="text-lg font-semibold text-stone-900 dark:text-stone-50">{f.q}</dt>
+              <dd class="mt-2 text-base leading-relaxed text-stone-600 dark:text-stone-300">{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
     </div>
   </main>
 </Base>

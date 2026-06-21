@@ -1,23 +1,64 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TopNav from '@/components/TopNav.astro';
+import { CALCULATORS } from '@/lib/calculators';
+
+const calcCount = CALCULATORS.length;
 ---
 
-<Base title="Pricing | Mycelocity" description="Mycelocity pricing — coming soon." path="/pricing">
+<Base
+  title="Pricing — Free Mushroom Growing Calculators | Mycelocity"
+  description="Mycelocity is free. All 10 connected mushroom growing calculators and every guide, with no account required."
+  path="/pricing"
+>
   <TopNav />
 
   <main>
-    <div class="mx-auto flex max-w-2xl flex-col items-start px-4 py-20 sm:px-6 lg:px-10">
-      <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
-        Pricing
-      </h1>
-      <p class="mt-3 text-stone-600 dark:text-stone-300">Coming soon.</p>
-      <a
-        href="/"
-        class="mt-6 inline-flex items-center rounded-lg border border-stone-300 bg-paper px-5 py-2.5 text-sm font-semibold text-stone-700 hover:border-accent-400 hover:text-accent-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:border-accent-500"
-      >
-        ← Back home
-      </a>
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
+          Pricing
+        </h1>
+        <p class="mt-3 text-lg leading-relaxed text-stone-600 dark:text-stone-300">
+          Mycelocity is free. Every calculator, every guide, no account required.
+        </p>
+      </header>
+
+      <!-- Free tier -->
+      <div class="rounded-2xl border border-chanterelle-300 bg-chanterelle-50 p-6 dark:border-chanterelle-700 dark:bg-chanterelle-900/20">
+        <div class="flex items-baseline gap-2">
+          <span class="text-3xl font-bold text-stone-900 dark:text-stone-50">$0</span>
+          <span class="text-stone-500 dark:text-stone-400">/ forever</span>
+        </div>
+        <p class="mt-2 text-base text-stone-600 dark:text-stone-300">Everything on the site, today.</p>
+        <ul class="mt-5 space-y-2 text-base text-stone-700 dark:text-stone-200">
+          <li class="flex gap-2"><span aria-hidden="true" class="text-chanterelle-600 dark:text-chanterelle-400">✓</span> All {calcCount} connected calculators — yield, cost, profit, break-even, capacity and ROI</li>
+          <li class="flex gap-2"><span aria-hidden="true" class="text-chanterelle-600 dark:text-chanterelle-400">✓</span> The full grow-profile model — change one input, everything recomputes</li>
+          <li class="flex gap-2"><span aria-hidden="true" class="text-chanterelle-600 dark:text-chanterelle-400">✓</span> Every guide</li>
+          <li class="flex gap-2"><span aria-hidden="true" class="text-chanterelle-600 dark:text-chanterelle-400">✓</span> No sign-up, no email wall</li>
+        </ul>
+        <a
+          href="/calculators"
+          class="mt-6 inline-flex items-center rounded-lg bg-chanterelle-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-chanterelle-600"
+        >
+          Start calculating
+        </a>
+      </div>
+
+      <!-- Planned: Pro -->
+      <div class="mt-6 rounded-2xl border border-dashed border-stone-300 p-6 dark:border-stone-700">
+        <div class="flex items-center gap-2">
+          <h2 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">Pro</h2>
+          <span class="inline-flex items-center rounded-sm bg-stone-200 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-stone-600 dark:bg-stone-800 dark:text-stone-300">
+            Planned
+          </span>
+        </div>
+        <p class="mt-2 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          A paid tier is in the works for growers who want to save and revisit their numbers. Likely
+          to include exporting every calculation to a spreadsheet and saving named grow profiles.
+          It isn't available yet — and the calculators above will stay free regardless.
+        </p>
+      </div>
     </div>
   </main>
 </Base>

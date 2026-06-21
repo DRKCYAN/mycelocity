@@ -2,7 +2,8 @@
 title: 'Reading Your Farm''s Economics: Margin, Break-even and ROI'
 description: How yield and cost become margin, break-even and return on investment — the chain that turns a grow into a business, tied to four connected calculators.
 seoTitle: 'Mushroom Farm Economics — Margin, Break-even & ROI | Mycelocity'
-order: 5
+datePublished: '2026-06-19'
+order: 8
 category: Economics
 relatedCalculators:
   - profit-per-block

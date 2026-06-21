@@ -1,23 +1,129 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TopNav from '@/components/TopNav.astro';
+
+const siteUrl = (p: string) => new URL(p, Astro.site ?? 'https://mycelocity.com').href;
+
+// AboutPage + Organization — tells Google who is behind the numbers.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Mycelocity',
+  url: siteUrl('/about'),
+  description:
+    'The story behind Mycelocity — a free mushroom growing calculator built by a beginner grower who could not find a simple way to organize costs, yields and profit.',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Mycelocity',
+    url: siteUrl('/'),
+    logo: siteUrl('/logo.png'),
+  },
+};
 ---
 
-<Base title="About | Mycelocity" description="About Mycelocity — coming soon." path="/about">
+<Base
+  title="About Mycelocity — Why I Built a Free Mushroom Growing Calculator"
+  description="The story behind Mycelocity: a free mushroom growing calculator I built as a beginner grower, after finding costs, yields and profit hard to organize. Built for other beginners too."
+  jsonLd={jsonLd}
+  path="/about"
+>
   <TopNav />
 
   <main>
-    <div class="mx-auto flex max-w-2xl flex-col items-start px-4 py-20 sm:px-6 lg:px-10">
-      <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
-        About
-      </h1>
-      <p class="mt-3 text-stone-600 dark:text-stone-300">Coming soon.</p>
-      <a
-        href="/"
-        class="mt-6 inline-flex items-center rounded-lg border border-stone-300 bg-paper px-5 py-2.5 text-sm font-semibold text-stone-700 hover:border-accent-400 hover:text-accent-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:border-accent-500"
-      >
-        ← Back home
-      </a>
+    <div class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-10 lg:py-16">
+      <header class="mb-8">
+        <h1 class="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
+          About Mycelocity
+        </h1>
+        <p class="mt-3 text-lg leading-relaxed text-stone-600 dark:text-stone-300">
+          A free mushroom growing calculator, built by a beginner grower — for beginner growers.
+        </p>
+      </header>
+
+      <div class="space-y-8 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            How this started
+          </h2>
+          <p class="mt-3">
+            I recently got into mushroom growing with a friend. We were looking for a fun way to make
+            some money, and growing mushrooms hooked us almost immediately. Like most people, we
+            started on YouTube — and I still remember one particularly good video on estimating the
+            costs of starting a mushroom growing and selling operation.
+          </p>
+          <p class="mt-3">
+            The problem was that once we tried to actually run the numbers ourselves, the costs,
+            yields and everything in between were genuinely hard to organize and calculate. They all
+            depend on each other — change your biological efficiency or your price per pound and the
+            whole picture shifts — and juggling that across scattered notes and half-finished
+            spreadsheets was a mess.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            So I built the tool I wanted
+          </h2>
+          <p class="mt-3">
+            I'm into coding, so — armed with a new Claude Code subscription — I decided to build the
+            calculator I wished we'd had, as a passion project. That became
+            <a href="/calculators" class="text-accent-700 hover:underline dark:text-accent-300">the Mycelocity calculators</a>:
+            a connected set of tools covering the main calculations for growing mushrooms as a
+            business. They share one grow profile, so you change a value once and yield, cost, profit,
+            break-even, capacity and ROI all update together — instead of recalculating everything by
+            hand.
+          </p>
+          <p class="mt-3">
+            Honestly, the tools here were enough for the two of us to get started as beginners and
+            gave us solid estimates to plan around. I may keep adding calculators for more niche
+            things over time, but the core is already what we actually used.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            How the numbers work
+          </h2>
+          <p class="mt-3">
+            Nothing here is a black box. Each calculator shows the exact formula it uses, drawn from
+            standard cultivation metrics — biological efficiency measured against <em>dry</em>
+            substrate weight — and basic unit economics like cost of goods, contribution margin,
+            break-even and payback. The default values are sensible starting points based on common
+            species (oyster, shiitake, lion's mane, king oyster) and typical small setups. They're
+            meant to be replaced with your own measured numbers as soon as you have a few flushes
+            logged. The
+            <a href="/guides" class="text-accent-700 hover:underline dark:text-accent-300">guides</a>
+            explain the reasoning behind each one.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            Who it's for
+          </h2>
+          <p class="mt-3">
+            People in the same spot we were: curious beginners sizing up a first grow, and hobbyists
+            wondering whether mushrooms could actually make money. It's completely free, with no
+            sign-up — if a default looks off or you spot something that could be clearer, I'd genuinely
+            like to know.
+          </p>
+        </section>
+      </div>
+
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a
+          href="/calculators"
+          class="inline-flex items-center rounded-lg bg-chanterelle-500 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-chanterelle-600"
+        >
+          Open the calculators
+        </a>
+        <a
+          href="/guides"
+          class="inline-flex items-center rounded-lg border border-stone-300 bg-paper px-5 py-2.5 text-sm font-semibold text-stone-700 hover:border-accent-400 hover:text-accent-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:border-accent-500"
+        >
+          Read the guides
+        </a>
+      </div>
     </div>
   </main>
 </Base>

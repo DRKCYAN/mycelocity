@@ -21,6 +21,10 @@ const guides = defineCollection({
     description: z.string(),
     /** SEO <title>. */
     seoTitle: z.string(),
+    /** ISO date (YYYY-MM-DD) the guide was first published. Feeds Article JSON-LD. */
+    datePublished: z.string(),
+    /** ISO date of the last substantive edit. Defaults to datePublished. */
+    dateModified: z.string().optional(),
     /** Controls ordering on /guides and in the sidebar (ascending). */
     order: z.number(),
     /** Calculator `id`s this guide supports (from src/lib/calculators.ts). */

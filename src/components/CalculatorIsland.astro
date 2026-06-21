@@ -1,0 +1,33 @@
+---
+// Single source of truth for the slug → React island mapping. Used by both the
+// consolidated hub (/calculators) and the per-calculator standalone pages
+// (/calculators/[slug]). Islands must be referenced statically (not via a
+// variable) so Astro can resolve each one for client-side hydration — hence the
+// explicit conditional list rather than a dynamic lookup.
+import BiologicalEfficiency from '@/components/calculators/BiologicalEfficiency.tsx';
+import ContaminationLoss from '@/components/calculators/ContaminationLoss.tsx';
+import SubstrateMoisture from '@/components/calculators/SubstrateMoisture.tsx';
+import CogsPerBlock from '@/components/calculators/CogsPerBlock.tsx';
+import ProductionCapacity from '@/components/calculators/ProductionCapacity.tsx';
+import ProfitPerBlock from '@/components/calculators/ProfitPerBlock.tsx';
+import BreakEven from '@/components/calculators/BreakEven.tsx';
+import RevenuePerSquareFoot from '@/components/calculators/RevenuePerSquareFoot.tsx';
+import StartupCost from '@/components/calculators/StartupCost.tsx';
+import PaybackRoi from '@/components/calculators/PaybackRoi.tsx';
+
+export interface Props {
+  slug: string;
+}
+const { slug } = Astro.props;
+---
+
+{slug === 'biological-efficiency' && <BiologicalEfficiency client:visible />}
+{slug === 'contamination-loss' && <ContaminationLoss client:visible />}
+{slug === 'substrate-moisture' && <SubstrateMoisture client:visible />}
+{slug === 'cogs-per-block' && <CogsPerBlock client:visible />}
+{slug === 'production-capacity' && <ProductionCapacity client:visible />}
+{slug === 'profit-per-block' && <ProfitPerBlock client:visible />}
+{slug === 'break-even' && <BreakEven client:visible />}
+{slug === 'revenue-per-square-foot' && <RevenuePerSquareFoot client:visible />}
+{slug === 'startup-cost' && <StartupCost client:visible />}
+{slug === 'payback-roi' && <PaybackRoi client:visible />}

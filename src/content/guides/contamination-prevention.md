@@ -2,7 +2,8 @@
 title: Preventing and Managing Contamination
 description: The common sources of contamination, how to estimate a realistic contamination rate, and what "effective yield" means once losses are applied.
 seoTitle: 'Mushroom Contamination Prevention & Loss Rates | Mycelocity'
-order: 3
+datePublished: '2026-06-19'
+order: 6
 category: Biology
 relatedCalculators:
   - contamination-loss

@@ -2,7 +2,8 @@
 title: 'Costing a Block: Spawn Rates, Substrate and COGS'
 description: What belongs in the cost of a single fruiting block — substrate, spawn ratio, packaging and sterilisation — and how spawn rate trades cost against speed.
 seoTitle: 'Costing a Mushroom Block — Spawn Rate, Substrate & COGS | Mycelocity'
-order: 4
+datePublished: '2026-06-19'
+order: 7
 category: Operations
 relatedCalculators:
   - cogs-per-block

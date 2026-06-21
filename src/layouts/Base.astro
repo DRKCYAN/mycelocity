@@ -9,10 +9,18 @@ export interface Props {
   jsonLd?: Record<string, unknown>;
   /** Canonical path, e.g. "/calculators/profit-per-block". */
   path?: string;
+  /**
+   * Social share image (og:image / twitter:image). Defaults to the logo so
+   * every shared link gets a branded thumbnail. Pass a wide 1200×630 image here
+   * later and the twitter card can be bumped to summary_large_image.
+   */
+  image?: string;
 }
 
-const { title, description, jsonLd, path = '' } = Astro.props;
-const canonical = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
+const { title, description, jsonLd, path = '', image = '/logo.png' } = Astro.props;
+const site = Astro.site ?? 'https://mycelocity.com';
+const canonical = new URL(path, site).href;
+const ogImage = new URL(image, site).href;
 ---
 
 <!doctype html>
@@ -31,7 +39,9 @@ const canonical = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content="Mycelocity" />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content={ogImage} />
 
     <ClientRouter />
 
