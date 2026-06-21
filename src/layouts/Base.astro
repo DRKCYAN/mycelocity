@@ -20,7 +20,7 @@ const canonical = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/logo.png" type="image/png" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -64,6 +64,9 @@ const canonical = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
           } catch (e) {}
         }
         applyTheme();
+        // Mark the document as loading before first paint so the nav logo spins
+        // immediately; TopNav clears this on the first astro:page-load.
+        document.documentElement.classList.add('nav-loading');
         if (!window.__myceloThemeBound) {
           window.__myceloThemeBound = true;
           document.addEventListener('astro:after-swap', applyTheme);

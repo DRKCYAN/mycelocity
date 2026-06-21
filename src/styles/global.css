@@ -128,8 +128,23 @@ input[type='number'] {
   animation: result-pulse 0.6s ease-out;
 }
 
+/* Logo spins while a page is loading — `.nav-loading` is toggled on <html>
+   (set before paint in Base.astro, and on each view-transition navigation in
+   TopNav.astro). */
+@keyframes logo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.nav-loading [data-site-logo] {
+  animation: logo-spin 0.8s linear infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .result-pulse {
+    animation: none;
+  }
+  .nav-loading [data-site-logo] {
     animation: none;
   }
   html {

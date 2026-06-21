@@ -23,7 +23,14 @@ const navLinkClass = (active: boolean) =>
 >
   <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-10">
     <a href="/" class="flex items-center gap-2.5 text-lg font-bold text-stone-900 dark:text-stone-100">
-      <img src="/favicon.svg" alt="" width="28" height="28" />
+      <img
+        src="/logo.png"
+        alt=""
+        width="28"
+        height="28"
+        data-site-logo
+        class="h-7 w-7 rounded-full object-cover ring-1 ring-stone-300 dark:ring-stone-700"
+      />
       Mycelocity
     </a>
 
@@ -272,6 +279,18 @@ const navLinkClass = (active: boolean) =>
     if (!window.__myceloNavBound) {
       window.__myceloNavBound = true;
       document.addEventListener('astro:page-load', setup);
+
+      // Spin the logo while a page is loading. A view-transition navigation
+      // starts the spin; it stops once the new page is fully loaded. The very
+      // first load starts with `nav-loading` already set in <head> (Base.astro),
+      // which the first astro:page-load below clears.
+      var root = document.documentElement;
+      document.addEventListener('astro:before-preparation', function () {
+        root.classList.add('nav-loading');
+      });
+      document.addEventListener('astro:page-load', function () {
+        root.classList.remove('nav-loading');
+      });
     }
   })();
 </script>
