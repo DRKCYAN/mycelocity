@@ -15,6 +15,11 @@ export const GRAMS_PER_LB = 453.592;
 /** Subset of inputs every derivation can rely on. */
 type In = GrowProfile;
 
+/** Share of started blocks that survive contamination (0–1). */
+export function survivalRate(i: In): number {
+  return Math.max(0, 1 - i.contaminationRate / 100);
+}
+
 // ── 1. Biological Efficiency & Yield ───────────────────────────────
 export interface YieldResult {
   yieldG: number;
@@ -114,9 +119,14 @@ export interface ProfitResult {
   yieldLb: number;
   cogsPerBlock: number;
   revenuePerBlock: number;
+  /** Clean unit economics of a *successful* block: revenue − COGS. */
   marginPerBlock: number;
+  /** Share of started blocks that survive contamination (0–1). */
+  survival: number;
+  /** Margin per block *started*: survival × revenue − full COGS. Drives totals. */
+  effectiveMarginPerBlock: number;
   monthlyNet: number;
-  /** Blocks per month needed to cover fixed costs. Infinity if margin ≤ 0. */
+  /** Blocks to *start* per month to cover fixed costs. Infinity if effective margin ≤ 0. */
   breakevenBlocks: number;
 }
 
@@ -124,16 +134,25 @@ export function calculateProfit(i: In): ProfitResult {
   const { yieldG, yieldLb } = calculateYield(i);
   const cogsPerBlock = calculateCOGS(i).total;
   const revenuePerBlock = yieldLb * i.pricePerLb;
+  // Clean unit economics of a *successful* block — a stable pricing reference.
   const marginPerBlock = revenuePerBlock - cogsPerBlock;
-  const monthlyNet = marginPerBlock * i.blocksPerMonth - i.fixedCostsPerMonth;
+  // Contamination hits the totals: contaminated blocks earn no revenue but still
+  // cost full COGS, so the margin per block *started* is haircut by survival.
+  const survival = survivalRate(i);
+  const effectiveMarginPerBlock = survival * revenuePerBlock - cogsPerBlock;
+  const monthlyNet = effectiveMarginPerBlock * i.blocksPerMonth - i.fixedCostsPerMonth;
   const breakevenBlocks =
-    marginPerBlock > 0 ? Math.ceil(i.fixedCostsPerMonth / marginPerBlock) : Infinity;
+    effectiveMarginPerBlock > 0
+      ? Math.ceil(i.fixedCostsPerMonth / effectiveMarginPerBlock)
+      : Infinity;
   return {
     yieldG,
     yieldLb,
     cogsPerBlock,
     revenuePerBlock,
     marginPerBlock,
+    survival,
+    effectiveMarginPerBlock,
     monthlyNet,
     breakevenBlocks,
   };
@@ -141,19 +160,27 @@ export function calculateProfit(i: In): ProfitResult {
 
 // ── 7. Break-even ──────────────────────────────────────────────────
 export interface BreakevenResult {
+  /** Clean contribution margin of a successful block. */
   marginPerBlock: number;
+  /** Margin per block started, after contamination. Drives viability. */
+  effectiveMarginPerBlock: number;
+  survival: number;
   breakevenBlocks: number;
   breakevenLbs: number;
 }
 
 export function calculateBreakeven(i: In): BreakevenResult {
-  const { marginPerBlock, yieldLb } = calculateProfit(i);
+  const { marginPerBlock, effectiveMarginPerBlock, survival, yieldLb } = calculateProfit(i);
+  // Blocks you must *start* per month for post-contamination revenue to cover fixed costs.
   const breakevenBlocks =
-    marginPerBlock > 0 ? i.fixedCostsPerMonth / marginPerBlock : Infinity;
+    effectiveMarginPerBlock > 0 ? i.fixedCostsPerMonth / effectiveMarginPerBlock : Infinity;
   return {
     marginPerBlock,
+    effectiveMarginPerBlock,
+    survival,
     breakevenBlocks,
-    breakevenLbs: breakevenBlocks * yieldLb,
+    // Pounds actually sold at break-even = only the surviving blocks yield.
+    breakevenLbs: survival * breakevenBlocks * yieldLb,
   };
 }
 
@@ -169,7 +196,9 @@ export interface RevenuePerSqFtResult {
 export function calculateRevenuePerSqFt(i: In): RevenuePerSqFtResult {
   const { blocksPerChamber, cyclesPerYear } = calculateCapacity(i);
   const { yieldLb } = calculateYield(i);
-  const annualRevenue = blocksPerChamber * cyclesPerYear * yieldLb * i.pricePerLb;
+  // Only harvestable blocks generate revenue, so haircut by the survival rate.
+  const annualRevenue =
+    survivalRate(i) * blocksPerChamber * cyclesPerYear * yieldLb * i.pricePerLb;
   const revPerSqFt = i.fruitingFootprint > 0 ? annualRevenue / i.fruitingFootprint : 0;
   return { blocksPerChamber, cyclesPerYear, yieldLb, annualRevenue, revPerSqFt };
 }

@@ -4,7 +4,7 @@ import { calculateCapacity, fmtInt, fmtNumber } from '@/lib/derivations';
 import SliderRow from '@/components/SliderRow';
 import NumberRow from '@/components/NumberRow';
 import ResultCard from '@/components/ResultCard';
-import { InputsCard, ResultsGrid, TierLabel, FeedsArrow } from '@/components/ui';
+import { InputsCard, ResultsGrid, TierLabel, FeedsArrow, FedIn } from '@/components/ui';
 
 export default function ProductionCapacity() {
   const i = useInputs();
@@ -40,7 +40,7 @@ export default function ProductionCapacity() {
           />
         </InputsCard>
 
-        <InputsCard title="Targets & cycle">
+        <InputsCard title="Production target">
           <NumberRow
             label="Target annual production"
             value={i.targetAnnualProduction}
@@ -48,17 +48,14 @@ export default function ProductionCapacity() {
             step={500}
             onChange={(v) => setInput('targetAnnualProduction', v)}
           />
-          <SliderRow
-            label="Cycle length"
-            value={i.cycleDays}
-            min={14}
-            max={120}
-            step={1}
-            unit="days"
-            onChange={(v) => setInput('cycleDays', v)}
-            hint="Colonization + fruiting + turnaround."
-          />
         </InputsCard>
+
+        {/* Cycle length is seeded by the species preset and edited once, at the root. */}
+        <FedIn
+          from="Grow profile"
+          href="#grow-profile"
+          items={[{ label: 'Cycle length', value: `${i.cycleDays} days` }]}
+        />
       </div>
 
       <div>

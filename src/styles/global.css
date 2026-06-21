@@ -34,7 +34,7 @@
   --color-chanterelle-800: #6a4319;
   --color-chanterelle-900: #563716;
 
-  /* Tertiary — clay / brick — negatives & warnings */
+  /* Tertiary — clay / brick — negatives & warnings; also the Finance layer. */
   --color-clay-50: #f7e9e3;
   --color-clay-100: #efcfc3;
   --color-clay-200: #e0a892;
@@ -43,6 +43,21 @@
   --color-clay-500: #b0563f;
   --color-clay-600: #97462f;
   --color-clay-700: #7c3a28;
+  --color-clay-800: #5f2c1f; /* completes the ramp for dark-mode Finance chips */
+  --color-clay-900: #46211a;
+
+  /* Quaternary — blewit (Lepista nuda), a muted lilac/aubergine — the
+     Operations layer colour (the one hue missing from the original palette). */
+  --color-blewit-50: #f1eef5;
+  --color-blewit-100: #e0d8ea;
+  --color-blewit-200: #c7b7d8;
+  --color-blewit-300: #a892c0;
+  --color-blewit-400: #8b6fa6;
+  --color-blewit-500: #74578f;
+  --color-blewit-600: #614876;
+  --color-blewit-700: #4e3a5f;
+  --color-blewit-800: #3e2f4b;
+  --color-blewit-900: #2f243a;
 
   /* Warm neutral ramp — overrides Tailwind `stone` app-wide.
      Light: parchment → bark ink. Dark: deep bark. */

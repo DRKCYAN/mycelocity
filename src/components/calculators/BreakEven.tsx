@@ -1,59 +1,60 @@
 import { useInputs } from '@/store/useInputs';
-import { setInput } from '@/store/inputs';
 import { calculateBreakeven, fmtCurrency, fmtInt, fmtNumber } from '@/lib/derivations';
-import NumberRow from '@/components/NumberRow';
 import ResultCard from '@/components/ResultCard';
-import { InputsCard, ResultsGrid, TierLabel } from '@/components/ui';
+import { ResultsGrid, TierLabel, FedIn } from '@/components/ui';
 
+/**
+ * Break-even is a pure downstream view. Contribution margin and fixed costs flow
+ * in from Profit per block; contamination flows in from Contamination loss. A
+ * block must clear its COGS *after* contamination losses to break even, so the
+ * viability gate uses the effective (contamination-adjusted) margin.
+ */
 export default function BreakEven() {
   const i = useInputs();
   const r = calculateBreakeven(i);
-  const profitable = r.marginPerBlock > 0;
+  const viable = r.effectiveMarginPerBlock > 0;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
-        <InputsCard title="Inputs">
-          <NumberRow
-            label="Fixed costs per month"
-            value={i.fixedCostsPerMonth}
-            unit="$"
-            step={100}
-            onChange={(v) => setInput('fixedCostsPerMonth', v)}
-          />
-        </InputsCard>
+        <FedIn
+          from="Profit per block"
+          href="#profit-per-block"
+          items={[
+            {
+              label: 'Contribution margin / block',
+              value: fmtCurrency(r.marginPerBlock),
+              tone: r.marginPerBlock > 0 ? 'positive' : 'negative',
+            },
+            { label: 'Fixed costs / month', value: fmtCurrency(i.fixedCostsPerMonth) },
+          ]}
+        />
 
-        <div className="rounded-xl border border-dashed border-accent-300 bg-accent-50 px-4 py-3 text-sm dark:border-accent-700 dark:bg-accent-900/20">
-          <span className="text-stone-600 dark:text-stone-300">
-            Contribution margin chained in:{' '}
-            <strong className="tabular-nums text-stone-900 dark:text-stone-100">
-              {fmtCurrency(r.marginPerBlock)}/block
-            </strong>
-          </span>
-          <a
-            href="#profit-per-block"
-            className="ml-2 font-medium text-accent-700 underline-offset-2 hover:underline dark:text-accent-400"
-          >
-            adjust →
-          </a>
-        </div>
+        <FedIn
+          from="Contamination loss"
+          href="#contamination-loss"
+          items={[
+            { label: 'Contamination', value: `${fmtNumber(i.contaminationRate, 0)}%` },
+            { label: 'Harvest survival', value: `${fmtNumber(r.survival * 100, 0)}%` },
+          ]}
+        />
       </div>
 
       <div>
         <TierLabel>Break-even point (per month)</TierLabel>
-        {profitable ? (
+        {viable ? (
           <ResultsGrid>
             <ResultCard
               label="Break-even blocks"
               value={fmtInt(r.breakevenBlocks)}
-              sub="blocks / month"
+              sub="blocks to start / month"
               tone="accent"
               emphasis
             />
             <ResultCard
               label="Break-even pounds"
               value={`${fmtNumber(r.breakevenLbs)} lb`}
-              sub="lbs / month"
+              sub="lbs sold / month"
               tone="accent"
             />
           </ResultsGrid>
@@ -61,7 +62,7 @@ export default function BreakEven() {
           <ResultCard
             label="Break-even"
             value="∞"
-            sub="margin per block is ≤ 0 — you cannot break even at this price/cost"
+            sub="after contamination, a started block doesn't clear its COGS — you cannot break even at this price, cost or contamination rate"
             tone="negative"
             emphasis
           />

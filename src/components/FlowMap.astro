@@ -1,0 +1,78 @@
+---
+// A compact, clickable mirror of the dependency diagram. Generated entirely
+// from calculator metadata (CATEGORIES + feeds/optional), so it never drifts
+// from the calculators it links to. Server-rendered — no JS, fully crawlable.
+import { CATEGORIES, calculatorsByCategory } from '@/lib/calculators';
+import { categoryTone, toneChip, toneBadge, toneDot } from '@/lib/tones';
+---
+
+<section
+  class="mb-10 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900"
+  aria-label="How the calculators connect"
+>
+  <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">How it connects</h2>
+  <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
+    One grow profile flows down four layers. Click any tool to jump to it.
+  </p>
+
+  <!-- Root: the species preset that seeds everything below -->
+  <div class="mt-4 flex flex-col items-center">
+    <a
+      href="#grow-profile"
+      class="inline-flex flex-col items-center rounded-lg border border-accent-300 bg-accent-50 px-4 py-2 text-center hover:bg-accent-100 dark:border-accent-700 dark:bg-accent-900/30 dark:hover:bg-accent-900/50"
+    >
+      <span class="text-sm font-semibold text-accent-800 dark:text-accent-200">Species preset</span>
+      <span class="text-xs text-stone-500 dark:text-stone-400">sets BE · price · spawn ratio · cycle days</span>
+    </a>
+  </div>
+
+  <!-- Layers -->
+  {
+    CATEGORIES.map((cat) => {
+      const tone = categoryTone(cat.name);
+      return (
+        <>
+          <div class="flex justify-center py-1 text-stone-400 dark:text-stone-600" aria-hidden="true">↓</div>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <span
+              class={`inline-flex w-fit shrink-0 items-center rounded-sm px-2 py-1 text-xs font-semibold uppercase tracking-wider sm:w-28 ${toneBadge[tone]}`}
+            >
+              {cat.name}
+            </span>
+            <ul class="flex flex-wrap gap-2">
+              {calculatorsByCategory(cat.name).map((calc) => (
+                <li>
+                  <a
+                    href={`#${calc.slug}`}
+                    class={`inline-flex items-center rounded-sm border px-3 py-1 text-sm font-medium ${toneChip[tone]} ${calc.optional ? 'border-dashed' : ''}`}
+                    title={calc.optional ? 'Optional / preparatory tool' : undefined}
+                  >
+                    {calc.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+      );
+    })
+  }
+
+  <!-- Legend mirroring the diagram -->
+  <div class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-stone-200 pt-4 text-xs text-stone-500 dark:border-stone-800 dark:text-stone-400">
+    {
+      CATEGORIES.map((cat) => (
+        <span class="inline-flex items-center gap-1.5">
+          <span class={`h-2.5 w-2.5 rounded-full ${toneDot[categoryTone(cat.name)]}`} />
+          {cat.name}
+        </span>
+      ))
+    }
+    <span class="inline-flex items-center gap-1.5">
+      <span class="inline-block h-px w-5 bg-stone-400 dark:bg-stone-500" /> Direct feed
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+      <span class="inline-block h-px w-5 border-t border-dashed border-stone-400 dark:border-stone-500" /> Optional
+    </span>
+  </div>
+</section>

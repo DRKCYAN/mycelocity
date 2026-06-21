@@ -1,17 +1,15 @@
 import { useInputs } from '@/store/useInputs';
-import { setInput, applySpecies } from '@/store/inputs';
-import { SPECIES } from '@/lib/species';
+import { setInput } from '@/store/inputs';
 import { calculateProfit, fmtCurrency, fmtNumber, fmtInt } from '@/lib/derivations';
-import SliderRow from '@/components/SliderRow';
 import NumberRow from '@/components/NumberRow';
 import ResultCard from '@/components/ResultCard';
-import { InputsCard, ResultsGrid, TierLabel, FeedsArrow } from '@/components/ui';
+import { InputsCard, ResultsGrid, TierLabel, FeedsArrow, FedIn } from '@/components/ui';
 
 /**
- * THE showcase calculator. Reads raw inputs from the shared store, derives the
- * full chain live, and renders results in three tiers with downward "feeds"
- * arrows. COGS flows in from the COGS-per-block inputs — change anything and
- * everything downstream recomputes.
+ * THE showcase calculator. It owns only the monthly volume + overhead; every
+ * upstream value (BE, price, yield, COGS) flows in from its single source and
+ * is shown as a "fed in ↑" chip. Change anything upstream and the three tiers
+ * recompute, pulsing as the ripple arrives.
  */
 export default function ProfitPerBlock() {
   const i = useInputs();
@@ -20,56 +18,9 @@ export default function ProfitPerBlock() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      {/* ── Inputs (white card) ─────────────────────────── */}
+      {/* ── Inputs this calculator owns + fed-in upstream values ───────── */}
       <div className="space-y-4">
-        <InputsCard title="Inputs">
-          <div className="py-2.5">
-            <label className="text-sm font-medium text-stone-700 dark:text-stone-200">
-              Species
-            </label>
-            <select
-              value={i.speciesId}
-              onChange={(e) => applySpecies(e.target.value)}
-              className="mt-1.5 w-full rounded-md border border-stone-300 bg-paper px-2 py-2 text-sm text-stone-900 focus:border-chanterelle-500 focus:outline-none focus:ring-1 focus:ring-chanterelle-500 dark:border-stone-600 dark:bg-stone-800 dark:text-stone-100"
-            >
-              {SPECIES.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-            <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">
-              Sets BE, price &amp; spawn ratio globally — overridable below.
-            </p>
-          </div>
-
-          <SliderRow
-            label="Biological efficiency"
-            value={i.be}
-            min={0}
-            max={150}
-            step={1}
-            unit="%"
-            onChange={(v) => setInput('be', v)}
-          />
-          <SliderRow
-            label="Dry substrate weight / block"
-            value={i.dryWeight}
-            min={100}
-            max={5000}
-            step={50}
-            unit="g"
-            onChange={(v) => setInput('dryWeight', v)}
-          />
-          <SliderRow
-            label="Price"
-            value={i.pricePerLb}
-            min={1}
-            max={40}
-            step={0.5}
-            unit="$/lb"
-            onChange={(v) => setInput('pricePerLb', v)}
-          />
+        <InputsCard title="Monthly volume & overhead">
           <NumberRow
             label="Blocks per month"
             value={i.blocksPerMonth}
@@ -85,21 +36,29 @@ export default function ProfitPerBlock() {
           />
         </InputsCard>
 
-        {/* COGS chained in from the COGS-per-block calculator. */}
-        <div className="rounded-xl border border-dashed border-accent-300 bg-accent-50 px-4 py-3 text-sm dark:border-accent-700 dark:bg-accent-900/20">
-          <span className="text-stone-600 dark:text-stone-300">
-            COGS chained in:{' '}
-            <strong className="tabular-nums text-stone-900 dark:text-stone-100">
-              {fmtCurrency(r.cogsPerBlock)}/block
-            </strong>
-          </span>
-          <a
-            href="/calculators/cogs-per-block"
-            className="ml-2 font-medium text-accent-700 underline-offset-2 hover:underline dark:text-accent-400"
-          >
-            adjust →
-          </a>
-        </div>
+        <FedIn
+          from="Grow profile"
+          href="#grow-profile"
+          items={[
+            { label: 'Biological efficiency', value: `${fmtNumber(i.be, 0)}%` },
+            { label: 'Price', value: `${fmtCurrency(i.pricePerLb)}/lb` },
+          ]}
+        />
+
+        <FedIn
+          from="COGS per block"
+          href="#cogs-per-block"
+          items={[{ label: 'COGS / block', value: fmtCurrency(r.cogsPerBlock) }]}
+        />
+
+        <FedIn
+          from="Contamination loss"
+          href="#contamination-loss"
+          items={[
+            { label: 'Contamination', value: `${fmtNumber(i.contaminationRate, 0)}%` },
+            { label: 'Harvest survival', value: `${fmtNumber(r.survival * 100, 0)}%` },
+          ]}
+        />
       </div>
 
       {/* ── Results: three chained tiers (gray cards) ───── */}
@@ -112,11 +71,7 @@ export default function ProfitPerBlock() {
             sub={`${fmtNumber(r.yieldLb)} lb`}
             tone="accent"
           />
-          <ResultCard
-            label="Price"
-            value={`${fmtCurrency(i.pricePerLb)}`}
-            sub="per pound"
-          />
+          <ResultCard label="Price" value={`${fmtCurrency(i.pricePerLb)}`} sub="per pound" />
         </ResultsGrid>
 
         <FeedsArrow label="feeds revenue" />
@@ -127,7 +82,7 @@ export default function ProfitPerBlock() {
           <ResultCard
             label="Margin / block"
             value={fmtCurrency(r.marginPerBlock)}
-            sub={`after ${fmtCurrency(r.cogsPerBlock)} COGS`}
+            sub={`per healthy block · after ${fmtCurrency(r.cogsPerBlock)} COGS`}
             tone={r.marginPerBlock < 0 ? 'negative' : 'positive'}
           />
         </ResultsGrid>
@@ -139,12 +94,16 @@ export default function ProfitPerBlock() {
           <ResultCard
             label="Break-even"
             value={Number.isFinite(r.breakevenBlocks) ? fmtInt(r.breakevenBlocks) : '∞'}
-            sub="blocks / month"
+            sub="blocks to start / month"
           />
           <ResultCard
             label="Monthly net profit"
             value={fmtCurrency(r.monthlyNet)}
-            sub={r.monthlyNet < 0 ? 'operating at a loss' : 'after fixed costs'}
+            sub={
+              r.monthlyNet < 0
+                ? 'operating at a loss'
+                : `after fixed costs · ${fmtNumber(i.contaminationRate, 0)}% contamination`
+            }
             tone={netTone}
             emphasis
           />

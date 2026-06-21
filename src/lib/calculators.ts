@@ -50,6 +50,14 @@ export interface Calculator {
   formula: string;
   /** ids of calculators that share inputs with this one ("connected to"). */
   connectedTo: string[];
+  /**
+   * ids of calculators this one feeds *downstream* (directed edges in the
+   * dependency diagram). Drives the flow-map arrows and the between-calculator
+   * connectors. Distinct from `connectedTo`, which is undirected.
+   */
+  feeds: string[];
+  /** True for optional/preparatory feeds (dashed edges), e.g. substrate moisture. */
+  optional?: boolean;
 }
 
 export const CALCULATORS: Calculator[] = [
@@ -68,6 +76,7 @@ export const CALCULATORS: Calculator[] = [
       'Biological efficiency (BE) is the ratio of fresh mushroom yield to the dry weight of the substrate, expressed as a percentage. This calculator converts your BE and dry substrate weight per block into the fresh yield you can expect, in grams and pounds, and splits it across each flush. It is the root of the Mycelocity model — yield feeds revenue, margin, break-even and capacity downstream.',
     formula: 'yield_g = (BE / 100) × dryWeight  ·  yield_lb = yield_g / 453.592  ·  flush_i = yield_g × distribution_i',
     connectedTo: ['contamination-loss', 'profit-per-block', 'revenue-per-square-foot'],
+    feeds: ['contamination-loss', 'profit-per-block', 'revenue-per-square-foot'],
   },
   {
     id: 'contamination-loss',
@@ -83,6 +92,7 @@ export const CALCULATORS: Calculator[] = [
       'Contamination is the single biggest source of lost yield for most growers. This calculator takes the number of blocks you started and your contamination rate and returns how many blocks remain harvestable, how many are wasted, and the effective yield once losses are applied. It shares the per-block yield from the Biological Efficiency calculator.',
     formula: 'effective = started × (1 − rate/100)  ·  wasted = started − effective  ·  effectiveYield = effective × yield_per_block',
     connectedTo: ['biological-efficiency', 'profit-per-block'],
+    feeds: ['profit-per-block', 'break-even', 'revenue-per-square-foot'],
   },
   {
     id: 'substrate-moisture',
@@ -98,6 +108,9 @@ export const CALCULATORS: Calculator[] = [
       'Substrate moisture content drives colonization speed and contamination risk. This calculator works two ways: measure the current moisture percentage from wet and dry weights, or specify a target moisture and get the exact amount of water to add. Field capacity for most bulk substrates sits around 60–70%.',
     formula: 'moisture% = ((wet − dry) / wet) × 100  ·  targetWet = dry / (1 − targetMoisture/100)  ·  waterToAdd = targetWet − wet',
     connectedTo: ['biological-efficiency'],
+    // Preparation tool, not a yield input — an optional/dashed feed in the diagram.
+    feeds: [],
+    optional: true,
   },
 
   // ── Operations ───────────────────────────────────────────
@@ -115,6 +128,7 @@ export const CALCULATORS: Calculator[] = [
       'Cost of goods sold (COGS) per block is the all-in variable cost to produce one fruiting block: substrate, spawn, packaging, and the energy and labor of sterilization spread across a batch. This calculator builds COGS up from each component so you can see what is actually driving your cost — and it feeds directly into margin and profit.',
     formula: 'substrate = costPerKg × kgPerBlock × (1 + waste/100)  ·  spawn = (kgPerBlock / N) × spawnCostPerKg  ·  steril = batchEnergyLabor / blocksPerBatch  ·  COGS = substrate + spawn + packaging + steril',
     connectedTo: ['profit-per-block', 'break-even'],
+    feeds: ['profit-per-block', 'break-even'],
   },
   {
     id: 'production-capacity',
@@ -130,6 +144,7 @@ export const CALCULATORS: Calculator[] = [
       'Capacity planning answers a simple question: how many fruiting chambers do you need to hit your production target? This calculator computes blocks per chamber from shelf area and block footprint, cycles per year from your cycle length, and the number of chambers required for your target annual output.',
     formula: 'blocksPerChamber = (shelfArea / blockFootprint) × shelves  ·  cyclesPerYear = 365 / cycleDays  ·  chambersNeeded = ceil(targetAnnual / (blocksPerChamber × cyclesPerYear))',
     connectedTo: ['revenue-per-square-foot', 'biological-efficiency'],
+    feeds: ['revenue-per-square-foot'],
   },
 
   // ── Economics ────────────────────────────────────────────
@@ -147,6 +162,7 @@ export const CALCULATORS: Calculator[] = [
       'Profit per block ties the whole model together. It takes your species, biological efficiency and substrate weight to derive yield, multiplies by price for revenue, subtracts COGS for margin, then scales by your monthly volume against fixed costs for monthly net profit and break-even. Change any single input and every downstream result recomputes instantly — this is the connected hub in action.',
     formula: 'revenue = yield_lb × price  ·  margin = revenue − COGS  ·  monthlyNet = margin × blocks − fixed  ·  breakeven = ceil(fixed / margin)',
     connectedTo: ['biological-efficiency', 'cogs-per-block', 'break-even', 'payback-roi'],
+    feeds: ['break-even', 'revenue-per-square-foot', 'payback-roi'],
   },
   {
     id: 'break-even',
@@ -162,6 +178,7 @@ export const CALCULATORS: Calculator[] = [
       'Your break-even point is the production volume at which contribution margin exactly covers fixed costs — below it you lose money, above it you profit. This calculator divides monthly fixed costs by the contribution margin per block to give the blocks, and then pounds, you must sell each month. Margin is shared live from Profit per Block.',
     formula: 'breakevenBlocks = fixed / margin  ·  breakevenLbs = breakevenBlocks × yield_lb',
     connectedTo: ['profit-per-block', 'cogs-per-block'],
+    feeds: [],
   },
   {
     id: 'revenue-per-square-foot',
@@ -177,6 +194,7 @@ export const CALCULATORS: Calculator[] = [
       'Revenue per square foot is the headline KPI of vertical farming: it tells you how hard your fruiting space is working. This calculator multiplies blocks per chamber, cycles per year, yield per block and price into annual revenue, then divides by the fruiting footprint. It reuses capacity and yield from the rest of the hub.',
     formula: 'annualRevenue = blocksPerChamber × cyclesPerYear × yield_lb × price  ·  revPerSqFt = annualRevenue / footprint',
     connectedTo: ['production-capacity', 'biological-efficiency', 'profit-per-block'],
+    feeds: [],
   },
 
   // ── Finance ──────────────────────────────────────────────
@@ -194,6 +212,7 @@ export const CALCULATORS: Calculator[] = [
       'How much capital does it take to start a mushroom farm? This calculator itemizes the major startup line items — equipment, initial substrate and spawn inventory, facility deposit, licensing and build-out — into a single total with a category breakdown. That total feeds the payback and ROI calculator.',
     formula: 'total = equipment + inventory + facilityDeposit + licensing + buildOut',
     connectedTo: ['payback-roi'],
+    feeds: ['payback-roi'],
   },
   {
     id: 'payback-roi',
@@ -209,6 +228,7 @@ export const CALCULATORS: Calculator[] = [
       'Payback and ROI translate operating profit into an investment return. This calculator takes your total startup capital and monthly net profit to compute how many months it takes to recover your investment, your annual return on investment, and your cash-on-cash return. Both inputs flow in automatically from Startup Cost and Profit per Block.',
     formula: 'paybackMonths = capital / monthlyNet  ·  ROI% = (annualNet / capital) × 100  ·  annualNet = monthlyNet × 12',
     connectedTo: ['startup-cost', 'profit-per-block'],
+    feeds: [],
   },
 ];
 

@@ -1,8 +1,11 @@
 ---
 import Base from '@/layouts/Base.astro';
 import TopNav from '@/components/TopNav.astro';
+import FlowMap from '@/components/FlowMap.astro';
+import CalculatorToc from '@/components/CalculatorToc.astro';
+import GrowProfilePanel from '@/components/GrowProfilePanel.tsx';
 import { CALCULATORS, CATEGORIES, calculatorsByCategory, calculatorById, type Calculator } from '@/lib/calculators';
-import { guidesForCalculator, type Guide } from '@/lib/guides';
+import { categoryTone, toneChip, toneRail, toneDot } from '@/lib/tones';
 
 // Islands must be referenced statically (not via a variable) so Astro can
 // resolve each one for client-side hydration.
@@ -16,14 +19,6 @@ import BreakEven from '@/components/calculators/BreakEven.tsx';
 import RevenuePerSquareFoot from '@/components/calculators/RevenuePerSquareFoot.tsx';
 import StartupCost from '@/components/calculators/StartupCost.tsx';
 import PaybackRoi from '@/components/calculators/PaybackRoi.tsx';
-
-// Can't `await` inside a JSX .map() callback, so resolve every calculator's
-// related guides up front and key them by calculator id.
-const guidesByCalcId = new Map<string, Guide[]>(
-  await Promise.all(
-    CALCULATORS.map(async (c) => [c.id, await guidesForCalculator(c.id)] as const)
-  )
-);
 
 const path = '/calculators';
 const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
@@ -54,7 +49,15 @@ const jsonLd = {
   <TopNav />
 
   <main>
-    <div class="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+     <div class="lg:grid lg:grid-cols-[15rem_minmax(0,1fr)] lg:gap-10">
+      <!-- Left table of contents (desktop only) -->
+      <aside class="hidden lg:block">
+        <CalculatorToc />
+      </aside>
+
+      <!-- Main content column -->
+      <div>
       <!-- Breadcrumb -->
       <nav class="mb-4 text-sm text-stone-500 dark:text-stone-400" aria-label="Breadcrumb">
         <a href="/" class="hover:text-accent-600 dark:hover:text-accent-400">Home</a>
@@ -83,47 +86,39 @@ const jsonLd = {
         <span class="ml-1 text-stone-500 dark:text-stone-400">— coming soon.</span>
       </div>
 
-      <!-- Jump-nav: every calculator on this page, grouped by category -->
-      <nav
-        class="mb-10 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900"
-        aria-label="Jump to calculator"
-      >
-        <h2 class="text-sm font-semibold text-stone-700 dark:text-stone-200">Jump to a calculator</h2>
-        <div class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2">
-          {
-            CATEGORIES.map((cat) => (
-              <div>
-                <a
-                  href={`#${cat.slug}`}
-                  class="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-400 hover:text-accent-600 dark:text-stone-500 dark:hover:text-accent-400"
-                >
-                  {cat.name}
-                </a>
-                <ul class="flex flex-wrap gap-2">
-                  {calculatorsByCategory(cat.name).map((calc) => (
-                    <li>
-                      <a
-                        href={`#${calc.slug}`}
-                        class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
-                      >
-                        {calc.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          }
+      <!-- Flow map: clickable mirror of the connection diagram -->
+      <FlowMap />
+
+      <!-- Root: the species preset that seeds every layer below -->
+      <section id="grow-profile" class="mb-12 scroll-mt-20">
+        <div class="flex items-center gap-2">
+          <span class="h-3 w-3 rounded-full bg-accent-500"></span>
+          <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            Grow profile
+          </h2>
         </div>
-      </nav>
+        <p class="mt-2 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          Start here. Pick a species to seed biological efficiency, price, spawn ratio and cycle
+          days — the four values that flow into every layer below. Each is editable in exactly one
+          place; everywhere downstream shows it as a “fed in ↑” chip.
+        </p>
+        <div class="mt-6">
+          <GrowProfilePanel client:visible />
+        </div>
+      </section>
 
       <!-- Per-category sections -->
       {
-        CATEGORIES.map((cat) => (
-          <section id={cat.slug} class="mb-14 scroll-mt-20">
-            <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
-              {cat.name}
-            </h2>
+        CATEGORIES.map((cat) => {
+          const tone = categoryTone(cat.name);
+          return (
+          <section id={cat.slug} class={`mb-14 scroll-mt-20 border-l-4 pl-5 sm:pl-6 ${toneRail[tone]}`}>
+            <div class="flex items-center gap-2">
+              <span class={`h-3 w-3 rounded-full ${toneDot[tone]}`}></span>
+              <h2 class="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                {cat.name}
+              </h2>
+            </div>
             <p class="mt-2 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
               {cat.blurb}
             </p>
@@ -133,7 +128,9 @@ const jsonLd = {
                 const connected = calc.connectedTo
                   .map((id) => calculatorById(id))
                   .filter((c): c is Calculator => Boolean(c));
-                const guides = guidesByCalcId.get(calc.id) ?? [];
+                const feeds = calc.feeds
+                  .map((id) => calculatorById(id))
+                  .filter((c): c is Calculator => Boolean(c));
 
                 return (
                   <section id={calc.slug} class="scroll-mt-20 border-t border-stone-200 pt-8 dark:border-stone-800">
@@ -174,7 +171,7 @@ const jsonLd = {
                             <li>
                               <a
                                 href={`#${c.slug}`}
-                                class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
+                                class={`inline-flex items-center rounded-sm border px-3 py-1 text-sm font-medium ${toneChip[categoryTone(c.category)]}`}
                               >
                                 {c.title}
                               </a>
@@ -184,35 +181,30 @@ const jsonLd = {
                       </aside>
                     )}
 
-                    {guides.length > 0 && (
-                      <aside class="mt-6 rounded-xl border border-stone-200 bg-paper p-5 dark:border-stone-800 dark:bg-stone-900">
-                        <h4 class="text-sm font-semibold text-stone-700 dark:text-stone-200">
-                          Guides for this calculator
-                        </h4>
-                        <p class="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                          Background reading on the inputs and formulas behind this tool.
-                        </p>
-                        <ul class="mt-3 flex flex-wrap gap-2">
-                          {guides.map((g) => (
-                            <li>
-                              <a
-                                href={`/guides/${g.id}`}
-                                class="inline-flex items-center rounded-sm border border-accent-200 bg-accent-50 px-3 py-1 text-sm font-medium text-accent-700 hover:bg-accent-100 dark:border-accent-800 dark:bg-accent-900/30 dark:text-accent-300 dark:hover:bg-accent-900/50"
-                              >
-                                {g.data.title}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </aside>
+                    {feeds.length > 0 && (
+                      <div class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+                        <span aria-hidden="true">↓</span>
+                        <span>feeds</span>
+                        {feeds.map((f) => (
+                          <a
+                            href={`#${f.slug}`}
+                            class={`inline-flex items-center rounded-sm border px-2.5 py-0.5 font-medium ${toneChip[categoryTone(f.category)]}`}
+                          >
+                            {f.title}
+                          </a>
+                        ))}
+                      </div>
                     )}
                   </section>
                 );
               })}
             </div>
           </section>
-        ))
+          );
+        })
       }
+      </div>
+     </div>
     </div>
   </main>
 </Base>

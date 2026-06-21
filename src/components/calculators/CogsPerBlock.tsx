@@ -4,7 +4,7 @@ import { calculateCOGS, fmtCurrency } from '@/lib/derivations';
 import SliderRow from '@/components/SliderRow';
 import NumberRow from '@/components/NumberRow';
 import ResultCard from '@/components/ResultCard';
-import { InputsCard, ResultsGrid, TierLabel, FeedsArrow } from '@/components/ui';
+import { InputsCard, ResultsGrid, TierLabel, FeedsArrow, FedIn } from '@/components/ui';
 
 export default function CogsPerBlock() {
   const i = useInputs();
@@ -46,15 +46,6 @@ export default function CogsPerBlock() {
             step={0.5}
             onChange={(v) => setInput('spawnCostPerKg', v)}
           />
-          <SliderRow
-            label="Spawn ratio (1:N)"
-            value={i.spawnRatio}
-            min={1}
-            max={20}
-            step={1}
-            unit=":1"
-            onChange={(v) => setInput('spawnRatio', v)}
-          />
         </InputsCard>
 
         <InputsCard title="Packaging & batch">
@@ -79,6 +70,13 @@ export default function CogsPerBlock() {
             onChange={(v) => setInput('blocksPerBatch', v)}
           />
         </InputsCard>
+
+        {/* Spawn ratio is seeded by the species preset and edited once, at the root. */}
+        <FedIn
+          from="Grow profile"
+          href="#grow-profile"
+          items={[{ label: 'Spawn ratio', value: `1:${i.spawnRatio}` }]}
+        />
       </div>
 
       <div>

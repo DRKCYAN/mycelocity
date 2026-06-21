@@ -1,10 +1,9 @@
 import { useInputs } from '@/store/useInputs';
 import { setInput } from '@/store/inputs';
-import { calculateRevenuePerSqFt, fmtCurrency, fmtInt, fmtNumber } from '@/lib/derivations';
+import { calculateRevenuePerSqFt, survivalRate, fmtCurrency, fmtInt, fmtNumber } from '@/lib/derivations';
 import NumberRow from '@/components/NumberRow';
-import SliderRow from '@/components/SliderRow';
 import ResultCard from '@/components/ResultCard';
-import { InputsCard, ResultsGrid, TierLabel, FeedsArrow } from '@/components/ui';
+import { InputsCard, TierLabel, FeedsArrow, FedIn } from '@/components/ui';
 
 export default function RevenuePerSquareFoot() {
   const i = useInputs();
@@ -21,25 +20,32 @@ export default function RevenuePerSquareFoot() {
             step={10}
             onChange={(v) => setInput('fruitingFootprint', v)}
           />
-          <SliderRow
-            label="Price"
-            value={i.pricePerLb}
-            min={1}
-            max={40}
-            step={0.5}
-            unit="$/lb"
-            onChange={(v) => setInput('pricePerLb', v)}
-          />
         </InputsCard>
 
-        <div className="rounded-xl border border-dashed border-accent-300 bg-accent-50 px-4 py-3 text-sm dark:border-accent-700 dark:bg-accent-900/20">
-          <p className="text-stone-600 dark:text-stone-300">Chained in from the hub:</p>
-          <ul className="mt-1 space-y-0.5 tabular-nums text-stone-900 dark:text-stone-100">
-            <li>{fmtInt(r.blocksPerChamber)} blocks / chamber</li>
-            <li>{fmtNumber(r.cyclesPerYear)} cycles / year</li>
-            <li>{fmtNumber(r.yieldLb)} lb / block</li>
-          </ul>
-        </div>
+        <FedIn
+          from="Grow profile"
+          href="#grow-profile"
+          items={[{ label: 'Price', value: `${fmtCurrency(i.pricePerLb)}/lb` }]}
+        />
+
+        <FedIn
+          from="Capacity & chambers"
+          href="#production-capacity"
+          items={[
+            { label: 'Blocks / chamber', value: fmtInt(r.blocksPerChamber) },
+            { label: 'Cycles / year', value: fmtNumber(r.cyclesPerYear) },
+            { label: 'Yield / block', value: `${fmtNumber(r.yieldLb)} lb` },
+          ]}
+        />
+
+        <FedIn
+          from="Contamination loss"
+          href="#contamination-loss"
+          items={[
+            { label: 'Contamination', value: `${fmtNumber(i.contaminationRate, 0)}%` },
+            { label: 'Harvest survival', value: `${fmtNumber(survivalRate(i) * 100, 0)}%` },
+          ]}
+        />
       </div>
 
       <div>
@@ -47,7 +53,7 @@ export default function RevenuePerSquareFoot() {
         <ResultCard
           label="Annual revenue"
           value={fmtCurrency(r.annualRevenue)}
-          sub="per chamber"
+          sub="per chamber · after contamination"
         />
 
         <FeedsArrow label="feeds the vertical-farming KPI" />
