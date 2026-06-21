@@ -9,7 +9,7 @@ import { CALCULATORS, CATEGORIES, calculatorsByCategory, calculatorById, type Ca
 import { categoryTone, toneChip, toneRail, toneDot } from '@/lib/tones';
 
 const path = '/calculators';
-const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
+const url = new URL(path, Astro.site ?? 'https://www.mycelocity.com').href;
 
 // One CollectionPage JSON-LD covering all 10 tools, mirroring the shape the
 // old per-category pages used — just scoped to the whole suite now.
@@ -23,7 +23,7 @@ const jsonLd = {
   hasPart: CALCULATORS.map((c) => ({
     '@type': 'WebApplication',
     name: c.title,
-    url: new URL(`/calculators/${c.slug}`, Astro.site ?? 'https://mycelocity.com').href,
+    url: new URL(`/calculators/${c.slug}`, Astro.site ?? 'https://www.mycelocity.com').href,
   })),
 };
 ---

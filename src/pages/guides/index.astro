@@ -12,11 +12,11 @@ const jsonLd = {
   name: 'Mushroom growing guides',
   description:
     'Practical mushroom-growing guides, each tied to a connected Mycelocity calculator.',
-  url: new URL(path, Astro.site ?? 'https://mycelocity.com').href,
+  url: new URL(path, Astro.site ?? 'https://www.mycelocity.com').href,
   hasPart: guides.map((g) => ({
     '@type': 'Article',
     name: g.data.title,
-    url: new URL(`/guides/${g.id}`, Astro.site ?? 'https://mycelocity.com').href,
+    url: new URL(`/guides/${g.id}`, Astro.site ?? 'https://www.mycelocity.com').href,
   })),
 };
 ---

@@ -19,7 +19,7 @@ const related = guide.data.relatedCalculators
   .filter((c): c is Calculator => Boolean(c));
 
 const path = `/guides/${guide.id}`;
-const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
+const url = new URL(path, Astro.site ?? 'https://www.mycelocity.com').href;
 
 const datePublished = guide.data.datePublished;
 const dateModified = guide.data.dateModified ?? datePublished;

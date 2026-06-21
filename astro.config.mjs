@@ -7,7 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 // The production site URL. Used for sitemap/canonical generation only.
 // Local-only build in this pass; the value just needs to be a valid absolute URL.
 export default defineConfig({
-  site: 'https://mycelocity.com',
+  site: 'https://www.mycelocity.com',
   integrations: [react(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

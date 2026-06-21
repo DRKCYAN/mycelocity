@@ -27,8 +27,8 @@ if (!calc) {
 }
 
 const path = `/calculators/${calc.slug}`;
-const url = new URL(path, Astro.site ?? 'https://mycelocity.com').href;
-const calcsUrl = new URL('/calculators', Astro.site ?? 'https://mycelocity.com').href;
+const url = new URL(path, Astro.site ?? 'https://www.mycelocity.com').href;
+const calcsUrl = new URL('/calculators', Astro.site ?? 'https://www.mycelocity.com').href;
 
 const connected = calc.connectedTo
   .map((id) => calculatorById(id))
@@ -56,7 +56,7 @@ const jsonLd = {
     {
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? 'https://mycelocity.com').href },
+        { '@type': 'ListItem', position: 1, name: 'Home', item: new URL('/', Astro.site ?? 'https://www.mycelocity.com').href },
         { '@type': 'ListItem', position: 2, name: 'Calculators', item: calcsUrl },
         { '@type': 'ListItem', position: 3, name: calc.title, item: url },
       ],

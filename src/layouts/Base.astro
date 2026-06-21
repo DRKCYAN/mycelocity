@@ -18,7 +18,7 @@ export interface Props {
 }
 
 const { title, description, jsonLd, path = '', image = '/logo.png' } = Astro.props;
-const site = Astro.site ?? 'https://mycelocity.com';
+const site = Astro.site ?? 'https://www.mycelocity.com';
 const canonical = new URL(path, site).href;
 const ogImage = new URL(image, site).href;
 ---
