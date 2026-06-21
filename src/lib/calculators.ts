@@ -9,22 +9,26 @@ export const CATEGORIES: { name: Category; slug: string; blurb: string }[] = [
   {
     name: 'Biology',
     slug: 'biology',
-    blurb: 'Yield, contamination and substrate fundamentals — the root of the model.',
+    blurb:
+      'Yield, contamination and substrate fundamentals — the root of the model. Includes a yield calculator and a substrate weight calculator.',
   },
   {
     name: 'Operations',
     slug: 'operations',
-    blurb: 'Per-block cost and the physical capacity to produce at scale.',
+    blurb:
+      'Per-block cost and the physical capacity to produce at scale — a cost calculator and a block calculator in one.',
   },
   {
     name: 'Economics',
     slug: 'economics',
-    blurb: 'Turn yield and cost into revenue, margin and break-even.',
+    blurb:
+      'Turn yield and cost into revenue, margin and break-even — profit calculator, margin calculator and revenue calculator territory.',
   },
   {
     name: 'Finance',
     slug: 'finance',
-    blurb: 'Capital required to start and how fast it pays back.',
+    blurb:
+      'Capital required to start and how fast it pays back — the business calculator and roi calculator section.',
   },
 ];
 
@@ -73,7 +77,7 @@ export const CALCULATORS: Calculator[] = [
     metaDescription:
       'Free mushroom biological efficiency calculator. Enter BE % and dry substrate weight to get fresh yield per block in grams and pounds, broken down by flush.',
     intro:
-      'Biological efficiency (BE) is the ratio of fresh mushroom yield to the dry weight of the substrate, expressed as a percentage. This calculator converts your BE and dry substrate weight per block into the fresh yield you can expect, in grams and pounds, and splits it across each flush. It is the root of the Mycelocity model — yield feeds revenue, margin, break-even and capacity downstream.',
+      'Biological efficiency (BE) is the ratio of fresh mushroom yield to the dry weight of the substrate, expressed as a percentage. This calculator converts your BE and dry substrate weight per block into the fresh yield you can expect, in grams and pounds, and splits it across each flush. As a mushroom yield calculator it doubles as a substrate weight calculator, since BE is only meaningful against an accurate dry weight. It is the root of the Mycelocity model — yield feeds revenue, margin, break-even and capacity downstream.',
     formula: 'yield_g = (BE / 100) × dryWeight  ·  yield_lb = yield_g / 453.592  ·  flush_i = yield_g × distribution_i',
     connectedTo: ['contamination-loss', 'profit-per-block', 'revenue-per-square-foot'],
     feeds: ['contamination-loss', 'profit-per-block', 'revenue-per-square-foot'],
@@ -89,7 +93,7 @@ export const CALCULATORS: Calculator[] = [
     metaDescription:
       'Calculate how many mushroom blocks survive contamination and your effective yield. Enter blocks started and contamination rate to see harvestable vs. wasted blocks.',
     intro:
-      'Contamination is the single biggest source of lost yield for most growers. This calculator takes the number of blocks you started and your contamination rate and returns how many blocks remain harvestable, how many are wasted, and the effective yield once losses are applied. It shares the per-block yield from the Biological Efficiency calculator.',
+      'Contamination is the single biggest source of lost yield for most growers. This calculator takes the number of blocks you started and your contamination rate and returns how many blocks remain harvestable, how many are wasted, and the effective yield once losses are applied. Use it as a quick mushroom rate calculator — and an estimate calculator for how much a bad batch actually costs you — alongside the per-block yield from the Biological Efficiency calculator.',
     formula: 'effective = started × (1 − rate/100)  ·  wasted = started − effective  ·  effectiveYield = effective × yield_per_block',
     connectedTo: ['biological-efficiency', 'profit-per-block'],
     feeds: ['profit-per-block', 'break-even', 'revenue-per-square-foot'],
@@ -105,7 +109,7 @@ export const CALCULATORS: Calculator[] = [
     metaDescription:
       'Free substrate moisture calculator for mushroom growers. Measure current moisture content from wet and dry weight, or compute exactly how much water to add to hit a target.',
     intro:
-      'Substrate moisture content drives colonization speed and contamination risk. This calculator works two ways: measure the current moisture percentage from wet and dry weights, or specify a target moisture and get the exact amount of water to add. Field capacity for most bulk substrates sits around 60–70%.',
+      'Substrate moisture content drives colonization speed and contamination risk. This calculator works two ways: measure the current moisture percentage from wet and dry weights, or specify a target moisture and get the exact amount of water to add. As a wet/dry weight calculator it also doubles as a moisture rate calculator for dialing in field capacity, which for most bulk substrates sits around 60–70%.',
     formula: 'moisture% = ((wet − dry) / wet) × 100  ·  targetWet = dry / (1 − targetMoisture/100)  ·  waterToAdd = targetWet − wet',
     connectedTo: ['biological-efficiency'],
     // Preparation tool, not a yield input — an optional/dashed feed in the diagram.
@@ -123,9 +127,9 @@ export const CALCULATORS: Calculator[] = [
     description: 'Build up the cost of goods sold for a single block from its components.',
     seoTitle: 'Mushroom COGS per Block Calculator — Cost of Goods | Mycelocity',
     metaDescription:
-      'Calculate the cost of goods sold per mushroom block: substrate, spawn, packaging and sterilization. Free COGS calculator that feeds your margin and profit.',
+      'Calculate the cost of goods sold per mushroom block: substrate, spawn, packaging and sterilization. Free COGS calculator and block calculator that feeds your margin and profit.',
     intro:
-      'Cost of goods sold (COGS) per block is the all-in variable cost to produce one fruiting block: substrate, spawn, packaging, and the energy and labor of sterilization spread across a batch. This calculator builds COGS up from each component so you can see what is actually driving your cost — and it feeds directly into margin and profit.',
+      'Cost of goods sold (COGS) per block is the all-in variable cost to produce one fruiting block: substrate, spawn, packaging, and the energy and labor of sterilization spread across a batch. This calculator builds COGS up from each component so you can see what is actually driving your cost — effectively a per-block cost calculator and price estimate calculator in one, itemizing the materials bill before you set a sale price — and it feeds directly into margin and profit.',
     formula: 'substrate = costPerKg × kgPerBlock × (1 + waste/100)  ·  spawn = (kgPerBlock / N) × spawnCostPerKg  ·  steril = batchEnergyLabor / blocksPerBatch  ·  COGS = substrate + spawn + packaging + steril',
     connectedTo: ['profit-per-block', 'break-even'],
     feeds: ['profit-per-block', 'break-even'],
@@ -141,7 +145,7 @@ export const CALCULATORS: Calculator[] = [
     metaDescription:
       'Plan mushroom farm capacity: blocks per fruiting chamber, cycles per year, and the number of chambers needed to hit a target annual production.',
     intro:
-      'Capacity planning answers a simple question: how many fruiting chambers do you need to hit your production target? This calculator computes blocks per chamber from shelf area and block footprint, cycles per year from your cycle length, and the number of chambers required for your target annual output.',
+      'Capacity planning answers a simple question: how many fruiting chambers do you need to hit your production target? This calculator computes blocks per chamber from shelf area and block footprint, cycles per year from your cycle length, and the number of chambers required for your target annual output — a block calculator and production-rate calculator for sizing a grow before you commit to it.',
     formula: 'blocksPerChamber = (shelfArea / blockFootprint) × shelves  ·  cyclesPerYear = 365 / cycleDays  ·  chambersNeeded = ceil(targetAnnual / (blocksPerChamber × cyclesPerYear))',
     connectedTo: ['revenue-per-square-foot', 'biological-efficiency'],
     feeds: ['revenue-per-square-foot'],
@@ -157,9 +161,9 @@ export const CALCULATORS: Calculator[] = [
     description: 'The showcase: yield → revenue → margin → break-even and monthly net, all chained.',
     seoTitle: 'Mushroom Farm Profit Calculator — Profit per Block | Mycelocity',
     metaDescription:
-      'The connected mushroom farm profit calculator. Change one input — BE, price or cost — and watch yield, revenue, margin, break-even and monthly net profit recompute live.',
+      'The connected mushroom farm profit calculator and business profit calculator. Change one input — BE, price or cost — and watch yield, revenue, margin, break-even and monthly net profit recompute live.',
     intro:
-      'Profit per block ties the whole model together. It takes your species, biological efficiency and substrate weight to derive yield, multiplies by price for revenue, subtracts COGS for margin, then scales by your monthly volume against fixed costs for monthly net profit and break-even. Change any single input and every downstream result recomputes instantly — this is the connected hub in action.',
+      'Profit per block ties the whole model together. It takes your species, biological efficiency and substrate weight to derive yield, multiplies by price for revenue, subtracts COGS for margin, then scales by your monthly volume against fixed costs for monthly net profit and break-even. As a business calculator for profit it doubles as a margin calculator and an income calculator — margin cost (COGS) is the number that decides whether monthly income is positive at all. Change any single input and every downstream result recomputes instantly — this is the connected hub in action.',
     formula: 'revenue = yield_lb × price  ·  margin = revenue − COGS  ·  monthlyNet = margin × blocks − fixed  ·  breakeven = ceil(fixed / margin)',
     connectedTo: ['biological-efficiency', 'cogs-per-block', 'break-even', 'payback-roi'],
     feeds: ['break-even', 'revenue-per-square-foot', 'payback-roi'],
@@ -175,7 +179,7 @@ export const CALCULATORS: Calculator[] = [
     metaDescription:
       'Find your mushroom farm break-even point in blocks and pounds per month. Enter fixed costs and contribution margin per block to see exactly what you must sell.',
     intro:
-      'Your break-even point is the production volume at which contribution margin exactly covers fixed costs — below it you lose money, above it you profit. This calculator divides monthly fixed costs by the contribution margin per block to give the blocks, and then pounds, you must sell each month. Margin is shared live from Profit per Block.',
+      'Your break-even point is the production volume at which contribution margin exactly covers fixed costs — below it you lose money, above it you profit. This calculator divides monthly fixed costs by the contribution margin per block to give the blocks, and then pounds, you must sell each month — the rate calculator every new mushroom business calculator should start with before scaling up. Margin is shared live from Profit per Block.',
     formula: 'breakevenBlocks = fixed / margin  ·  breakevenLbs = breakevenBlocks × yield_lb',
     connectedTo: ['profit-per-block', 'cogs-per-block'],
     feeds: [],
@@ -189,9 +193,9 @@ export const CALCULATORS: Calculator[] = [
     description: 'The vertical-farming KPI: annual revenue per square foot of fruiting space.',
     seoTitle: 'Revenue per Square Foot Calculator — Mushroom Farming | Mycelocity',
     metaDescription:
-      'Calculate annual revenue per square foot of mushroom fruiting space — the key vertical-farming KPI. Combines blocks per chamber, cycles, yield and price.',
+      'Calculate annual revenue per square foot of mushroom fruiting space — a business revenue calculator and the key vertical-farming KPI. Combines blocks per chamber, cycles, yield and price.',
     intro:
-      'Revenue per square foot is the headline KPI of vertical farming: it tells you how hard your fruiting space is working. This calculator multiplies blocks per chamber, cycles per year, yield per block and price into annual revenue, then divides by the fruiting footprint. It reuses capacity and yield from the rest of the hub.',
+      'Revenue per square foot is the headline KPI of vertical farming: it tells you how hard your fruiting space is working. This calculator multiplies blocks per chamber, cycles per year, yield per block and price into annual revenue, then divides by the fruiting footprint — a revenue calculator and price calculator combined, since both feed straight into the per-square-foot number. It reuses capacity and yield from the rest of the hub.',
     formula: 'annualRevenue = blocksPerChamber × cyclesPerYear × yield_lb × price  ·  revPerSqFt = annualRevenue / footprint',
     connectedTo: ['production-capacity', 'biological-efficiency', 'profit-per-block'],
     feeds: [],
@@ -207,9 +211,9 @@ export const CALCULATORS: Calculator[] = [
     description: 'Total startup capital from itemized equipment, inventory, deposit and build-out.',
     seoTitle: 'Mushroom Farm Startup Cost Calculator — Total Capital | Mycelocity',
     metaDescription:
-      'Estimate the startup cost of a mushroom farm. Itemize equipment, substrate and spawn inventory, facility deposit, licensing and build-out into total capital needed.',
+      'Estimate the startup cost of a mushroom farm with this free business calculator. Itemize equipment, substrate and spawn inventory, facility deposit, licensing and build-out into total capital needed.',
     intro:
-      'How much capital does it take to start a mushroom farm? This calculator itemizes the major startup line items — equipment, initial substrate and spawn inventory, facility deposit, licensing and build-out — into a single total with a category breakdown. That total feeds the payback and ROI calculator.',
+      'How much capital does it take to start a mushroom farm? This calculator itemizes the major startup line items — equipment, initial substrate and spawn inventory, facility deposit, licensing and build-out — into a single total with a category breakdown. It works as a free business calculator and startup cost estimate calculator before you commit any capital. That total feeds the payback and ROI calculator.',
     formula: 'total = equipment + inventory + facilityDeposit + licensing + buildOut',
     connectedTo: ['payback-roi'],
     feeds: ['payback-roi'],
@@ -223,9 +227,9 @@ export const CALCULATORS: Calculator[] = [
     description: 'Payback period, annual ROI and cash-on-cash return on your startup capital.',
     seoTitle: 'Mushroom Farm Payback & ROI Calculator | Mycelocity',
     metaDescription:
-      'Calculate payback period and ROI for a mushroom farm. Combines total startup capital with monthly net profit to show months to payback and annual return on investment.',
+      'Free ROI calculator and return calculator for a mushroom farm. Combines total startup capital with monthly net profit to show months to payback and annual return on investment.',
     intro:
-      'Payback and ROI translate operating profit into an investment return. This calculator takes your total startup capital and monthly net profit to compute how many months it takes to recover your investment, your annual return on investment, and your cash-on-cash return. Both inputs flow in automatically from Startup Cost and Profit per Block.',
+      'Payback and ROI translate operating profit into an investment return. This calculator takes your total startup capital and monthly net profit to compute how many months it takes to recover your investment, your annual return on investment, and your cash-on-cash return. It is the business ROI calculator and income calculator in the suite — one of the roi tools growers use to decide whether the income justifies the capital. Both inputs flow in automatically from Startup Cost and Profit per Block.',
     formula: 'paybackMonths = capital / monthlyNet  ·  ROI% = (annualNet / capital) × 100  ·  annualNet = monthlyNet × 12',
     connectedTo: ['startup-cost', 'profit-per-block'],
     feeds: [],
