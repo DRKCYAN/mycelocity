@@ -190,6 +190,21 @@ input[type='range']::-moz-range-thumb {
   border-color: var(--color-stone-900);
 }
 
+/* Mobile form ergonomics. iOS Safari auto-zooms the whole page whenever a
+   focused control has a font smaller than 16px — jarring exactly when someone
+   is tapping through the calculators. Below Tailwind's `sm` breakpoint we bump
+   every text/number/select control to 16px and give it a comfortable 40px tap
+   height; the compact 14px treatment is kept on sm+ where there's no zoom
+   penalty. Range sliders are excluded — they have their own fixed track height. */
+@media (max-width: 639.98px) {
+  input:not([type='range']),
+  select,
+  textarea {
+    font-size: 16px;
+    min-height: 2.5rem;
+  }
+}
+
 /* Guide article prose — minimal typography for rendered Markdown, built only
    from the existing warm-stone / forest-accent tokens (no typography plugin). */
 .prose-guide {
